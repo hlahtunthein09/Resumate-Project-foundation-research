@@ -1,0 +1,1363 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>ResuMate — Research Foundation Review</title>
+    <style>
+      :root {
+        --ink: #17302b;
+        --body: #3e514c;
+        --muted: #6d7c77;
+        --line: #d9e1dc;
+        --paper: #fbfcfa;
+        --page: #eef3f0;
+        --green: #276b56;
+        --mint: #dceee4;
+        --amber: #e8d8ae;
+        --coral: #b9614d;
+        --serif: Georgia, "Times New Roman", serif;
+        --sans: Arial, Helvetica, sans-serif;
+        --mono: Consolas, "Courier New", monospace;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        color: var(--body);
+        background: var(--page);
+        font: 16px/1.65 var(--sans);
+      }
+      a {
+        color: inherit;
+      }
+      .shell {
+        display: grid;
+        grid-template-columns: 292px minmax(0, 1fr);
+        max-width: 1560px;
+        min-height: 100vh;
+        margin: auto;
+        background: var(--paper);
+        box-shadow: 0 0 60px #152f2812;
+      }
+      aside {
+        position: sticky;
+        top: 0;
+        align-self: start;
+        height: 100vh;
+        overflow-y: auto;
+        padding: 38px 27px 30px;
+        border-right: 1px solid var(--line);
+        background: #f6f8f5;
+      }
+      .brand {
+        display: block;
+        margin-bottom: 31px;
+        color: var(--ink);
+        text-decoration: none;
+      }
+      .brand-mark {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--green);
+        font: 700 12px/1 var(--mono);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+      .brand-mark:before {
+        content: "R";
+        display: grid;
+        place-items: center;
+        width: 20px;
+        height: 20px;
+        color: white;
+        background: var(--green);
+        font: 700 12px/1 var(--serif);
+      }
+      .brand h1 {
+        margin: 13px 0 7px;
+        font: 600 28px/0.98 var(--serif);
+        letter-spacing: -0.04em;
+      }
+      .brand p,
+      .aside-note {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.45;
+      }
+      .nav-label {
+        margin: 0 0 10px;
+        color: var(--muted);
+        font: 700 10px/1 var(--mono);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+      nav a {
+        display: block;
+        padding: 7px 9px;
+        border-left: 2px solid transparent;
+        color: #66746f;
+        text-decoration: none;
+        font-size: 13px;
+        line-height: 1.25;
+      }
+      nav a:hover,
+      nav a:focus-visible,
+      nav a.current {
+        border-left-color: var(--coral);
+        color: var(--ink);
+        background: #eaf1ec;
+        outline: none;
+      }
+      .aside-note {
+        margin-top: 30px;
+        padding-top: 17px;
+        border-top: 1px solid var(--line);
+        font-size: 12px;
+      }
+      main {
+        min-width: 0;
+        padding: 0 clamp(26px, 6vw, 100px) 80px;
+      }
+      .hero {
+        min-height: 390px;
+        display: flex;
+        flex-direction: column;
+        justify-content: end;
+        padding: 74px 0 62px;
+        border-bottom: 1px solid var(--line);
+      }
+      .kicker,
+      .section-meta {
+        margin: 0 0 18px;
+        color: var(--green);
+        font: 700 11px/1 var(--mono);
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+      }
+      .hero h2 {
+        max-width: 880px;
+        margin: 0;
+        color: var(--ink);
+        font: 600 clamp(46px, 6vw, 84px) / 0.95 var(--serif);
+        letter-spacing: -0.055em;
+      }
+      .hero h2 em {
+        color: var(--green);
+      }
+      .intro {
+        max-width: 710px;
+        margin: 26px 0 0;
+        font-size: 20px;
+        line-height: 1.48;
+      }
+      section {
+        max-width: 1040px;
+        padding: 65px 0;
+        border-bottom: 1px solid var(--line);
+        scroll-margin-top: 20px;
+      }
+      section:last-child {
+        border: 0;
+      }
+      .section-meta {
+        margin-bottom: 12px;
+        font-size: 10px;
+      }
+      h3 {
+        max-width: 830px;
+        margin: 0;
+        color: var(--ink);
+        font: 600 clamp(30px, 3.35vw, 48px) / 1.06 var(--serif);
+        letter-spacing: -0.042em;
+      }
+      h4 {
+        margin: 0;
+        color: var(--ink);
+        font-size: 17px;
+        line-height: 1.25;
+      }
+      p {
+        max-width: 780px;
+        margin: 18px 0 0;
+      }
+      .lede {
+        max-width: 800px;
+        color: #2d4640;
+        font-size: 20px;
+        line-height: 1.5;
+      }
+      .grid-2,
+      .grid-3 {
+        display: grid;
+        gap: 18px;
+        margin-top: 30px;
+      }
+      .grid-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .grid-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .panel {
+        min-width: 0;
+        padding: 23px;
+        border: 1px solid var(--line);
+        background: white;
+      }
+      .panel p {
+        margin-top: 9px;
+        font-size: 14px;
+        line-height: 1.55;
+      }
+      .tag {
+        display: block;
+        margin-bottom: 11px;
+        color: var(--green);
+        font: 700 10px/1 var(--mono);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      .quote {
+        max-width: 880px;
+        margin: 30px 0 0;
+        padding: 28px 32px;
+        border-left: 5px solid var(--coral);
+        background: #f5f8f5;
+        color: var(--ink);
+        font: 600 clamp(23px, 2.35vw, 34px) / 1.18 var(--serif);
+        letter-spacing: -0.03em;
+      }
+      .quote em {
+        color: var(--green);
+      }
+      .source {
+        max-width: 920px;
+        margin-top: 24px;
+        color: var(--muted);
+        font: 11px/1.45 var(--mono);
+      }
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 1px;
+        margin-top: 30px;
+        background: var(--line);
+        border: 1px solid var(--line);
+      }
+      .steps div {
+        min-width: 0;
+        padding: 18px 15px 21px;
+        background: white;
+      }
+      .steps b {
+        display: block;
+        margin-bottom: 25px;
+        color: var(--green);
+        font: 700 10px/1 var(--mono);
+        letter-spacing: 0.1em;
+      }
+      .steps span {
+        color: var(--ink);
+        font-size: 15px;
+        font-weight: 700;
+        line-height: 1.25;
+      }
+      table {
+        width: 100%;
+        margin-top: 30px;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      th,
+      td {
+        padding: 15px 12px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+        text-align: left;
+        line-height: 1.45;
+      }
+      th {
+        color: var(--green);
+        font: 700 10px/1.2 var(--mono);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      td:first-child {
+        width: 22%;
+        color: var(--ink);
+        font-weight: 700;
+      }
+      .quality {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+        margin-top: 27px;
+      }
+      .quality span {
+        padding: 9px 12px;
+        border: 1px solid var(--line);
+        background: white;
+        color: var(--ink);
+        font-size: 14px;
+        font-weight: 700;
+      }
+      .balance {
+        display: grid;
+        grid-template-columns: 1fr 52px 1fr;
+        gap: 15px;
+        align-items: stretch;
+        margin-top: 30px;
+      }
+      .side {
+        padding: 25px;
+        border-top: 5px solid var(--green);
+        background: var(--mint);
+      }
+      .side:last-child {
+        border-color: #bd8a25;
+        background: #f8f0da;
+      }
+      .plus {
+        display: grid;
+        place-items: center;
+        color: var(--coral);
+        font: 600 40px/1 var(--serif);
+      }
+      .side p {
+        margin-top: 8px;
+        font-size: 14px;
+      }
+      .boundary {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        margin-top: 30px;
+        border: 1px solid var(--line);
+      }
+      .boundary > div {
+        padding: 26px;
+      }
+      .may {
+        background: var(--mint);
+        border-right: 1px solid var(--line);
+      }
+      ul {
+        max-width: 800px;
+        margin: 17px 0 0;
+        padding: 0;
+        list-style: none;
+      }
+      li {
+        position: relative;
+        margin: 7px 0;
+        padding-left: 18px;
+      }
+      li:before {
+        position: absolute;
+        left: 0;
+        content: "•";
+        color: var(--green);
+      }
+      .cannot li:before {
+        content: "×";
+        color: var(--coral);
+        font-weight: 700;
+      }
+      .flow {
+        display: grid;
+        grid-template-columns: minmax(150px, 0.8fr) 42px minmax(0, 2.4fr);
+        gap: 16px;
+        align-items: center;
+        margin-top: 30px;
+      }
+      .flow-origin {
+        padding: 25px 20px;
+        background: var(--ink);
+        color: white;
+        font: 600 25px/1.1 var(--serif);
+      }
+      .arrow {
+        color: var(--coral);
+        text-align: center;
+        font: 600 36px/1 var(--serif);
+      }
+      .choices {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+      }
+      .choices div {
+        min-width: 0;
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-top: 4px solid var(--green);
+        background: white;
+      }
+      .choices div:nth-child(2) {
+        border-top-color: #bd8a25;
+      }
+      .choices div:nth-child(3) {
+        border-top-color: var(--coral);
+      }
+      .choices p {
+        margin-top: 8px;
+        font-size: 13px;
+        line-height: 1.45;
+      }
+      .version-map {
+        display: grid;
+        grid-template-columns: 160px minmax(0, 1fr);
+        gap: 22px;
+        align-items: center;
+        margin-top: 30px;
+      }
+      .profile-node {
+        padding: 24px 17px;
+        background: var(--ink);
+        color: white;
+        text-align: center;
+        font: 600 22px/1.12 var(--serif);
+      }
+      .career-branches {
+        display: grid;
+        gap: 11px;
+      }
+      .career {
+        display: grid;
+        grid-template-columns: minmax(180px, 1.15fr) repeat(3, minmax(0, 1fr));
+        gap: 8px;
+      }
+      .career > * {
+        min-width: 0;
+        padding: 14px;
+        line-height: 1.25;
+      }
+      .career strong {
+        background: var(--mint);
+        color: var(--ink);
+      }
+      .career:nth-child(2) strong {
+        background: var(--amber);
+      }
+      .career span {
+        border: 1px solid var(--line);
+        background: white;
+        font-size: 13px;
+      }
+      .layers,
+      .scope {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+        margin-top: 30px;
+      }
+      .layers .panel:first-child {
+        border-top: 5px solid var(--green);
+      }
+      .layers .panel:last-child {
+        border-top: 5px solid #bd8a25;
+      }
+      .scope > div {
+        padding: 25px;
+        border: 1px solid var(--line);
+      }
+      .scope .now {
+        background: var(--mint);
+        border-color: #bfdcc9;
+      }
+      .scope ul {
+        columns: 2;
+        column-gap: 25px;
+      }
+      .scope li {
+        break-inside: avoid;
+        font-size: 14px;
+      }
+      .scope .later li:before {
+        color: #bd8a25;
+      }
+      .foundation {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 30px;
+      }
+      .foundation div {
+        min-width: 0;
+        min-height: 135px;
+        padding: 18px;
+        border-top: 4px solid var(--ink);
+        background: white;
+      }
+      .foundation b {
+        display: block;
+        color: var(--green);
+        font: 700 10px/1 var(--mono);
+        letter-spacing: 0.09em;
+      }
+      .foundation span {
+        display: block;
+        margin-top: 24px;
+        color: var(--ink);
+        font-weight: 700;
+        line-height: 1.25;
+      }
+      .next {
+        margin-top: 31px;
+        padding: 28px 30px;
+        background: var(--ink);
+        color: white;
+      }
+      .next h4 {
+        color: var(--mint);
+        font: 600 28px/1.1 var(--serif);
+      }
+      .next ol {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        margin: 23px 0 0;
+        padding: 0;
+        list-style: none;
+        counter-reset: stage;
+      }
+      .next li {
+        padding: 0;
+        color: #e1ebe5;
+        font-size: 14px;
+      }
+      .next li:before {
+        position: static;
+        display: block;
+        margin-bottom: 8px;
+        content: "0" counter(stage);
+        counter-increment: stage;
+        color: var(--amber);
+        font: 700 10px var(--mono);
+      }
+      .references {
+        columns: 2;
+        column-gap: 35px;
+        margin-top: 24px;
+      }
+      .references div {
+        break-inside: avoid;
+        padding: 12px 0;
+        border-top: 1px solid var(--line);
+        font-size: 13px;
+        line-height: 1.45;
+      }
+      .references b {
+        display: block;
+        margin-bottom: 3px;
+        color: var(--green);
+        font: 700 10px var(--mono);
+        letter-spacing: 0.08em;
+      }
+      @media (max-width: 980px) {
+        .shell {
+          grid-template-columns: 235px minmax(0, 1fr);
+        }
+        aside {
+          padding: 30px 19px;
+        }
+        main {
+          padding-left: 42px;
+          padding-right: 42px;
+        }
+        .grid-3 {
+          grid-template-columns: 1fr;
+        }
+        .steps {
+          grid-template-columns: repeat(3, 1fr);
+        }
+        .foundation {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .career {
+          grid-template-columns: 1fr 1fr;
+        }
+        .career strong {
+          grid-column: 1/-1;
+        }
+      }
+      @media (max-width: 720px) {
+        .shell {
+          display: block;
+        }
+        aside {
+          position: relative;
+          height: auto;
+          padding: 24px;
+          border-right: 0;
+          border-bottom: 1px solid var(--line);
+        }
+        .brand {
+          margin-bottom: 20px;
+        }
+        nav {
+          display: flex;
+          gap: 4px;
+          overflow-x: auto;
+          padding-bottom: 4px;
+        }
+        nav a {
+          flex: 0 0 auto;
+          border-left: 0;
+          border-bottom: 2px solid transparent;
+        }
+        nav a:hover,
+        nav a:focus-visible,
+        nav a.current {
+          border-left-color: transparent;
+          border-bottom-color: var(--coral);
+        }
+        .aside-note {
+          display: none;
+        }
+        main {
+          padding: 0 24px 50px;
+        }
+        .hero {
+          min-height: 335px;
+          padding: 50px 0;
+        }
+        .hero h2 {
+          font-size: clamp(40px, 12vw, 62px);
+        }
+        .intro,
+        .lede {
+          font-size: 18px;
+        }
+        section {
+          padding: 48px 0;
+        }
+        .grid-2,
+        .layers,
+        .scope,
+        .boundary {
+          grid-template-columns: 1fr;
+        }
+        .may {
+          border-right: 0;
+          border-bottom: 1px solid var(--line);
+        }
+        .steps {
+          grid-template-columns: 1fr 1fr;
+        }
+        .balance {
+          grid-template-columns: 1fr;
+        }
+        .plus {
+          height: 25px;
+        }
+        .flow {
+          grid-template-columns: 1fr;
+        }
+        .arrow {
+          transform: rotate(90deg);
+        }
+        .choices {
+          grid-template-columns: 1fr;
+        }
+        .version-map {
+          grid-template-columns: 1fr;
+        }
+        .career {
+          grid-template-columns: 1fr;
+        }
+        .scope ul {
+          columns: 1;
+        }
+        .references {
+          columns: 1;
+        }
+        .next ol {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      @media print {
+        @page {
+          margin: 15mm;
+        }
+        body {
+          background: white;
+          font-size: 11pt;
+        }
+        .shell {
+          display: block;
+          max-width: none;
+          box-shadow: none;
+        }
+        aside {
+          display: none;
+        }
+        main {
+          padding: 0;
+        }
+        .hero {
+          min-height: auto;
+          padding: 0 0 28px;
+        }
+        section {
+          padding: 28px 0;
+          break-inside: avoid;
+        }
+        .grid-3,
+        .foundation {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .source {
+          font-size: 8pt;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <aside aria-label="Research report navigation">
+        <a class="brand" href="#overview"
+          ><span class="brand-mark">ResuMate</span>
+          <h1>Research<br />Foundation Review</h1>
+          <p>Project research results<br />August 2026</p></a
+        >
+        <p class="nav-label">Research index</p>
+        <nav>
+          <a href="#overview">Overview</a><a href="#problem">Why ResuMate</a
+          ><a href="#method">Research approach</a
+          ><a href="#evidence">Evidence reviewed</a
+          ><a href="#competitors">Competitor findings</a
+          ><a href="#quality">CV quality &amp; ATS</a
+          ><a href="#ai">AI assistance &amp; truth</a
+          ><a href="#paths">Input &amp; existing CVs</a
+          ><a href="#version-variation">Version &amp; Variation</a
+          ><a href="#presentation">Templates &amp; localization</a
+          ><a href="#scope">MVP scope</a
+          ><a href="#foundation">Foundation &amp; next stages</a
+          ><a href="#references">References</a>
+        </nav>
+        <p class="aside-note">
+          Primary source of truth:<br /><strong
+            >RESUMATE-RESEARCH-FOUNDATION.md</strong
+          ><br /><br />Research review — not a product specification,
+          architecture proposal, or application UI.
+        </p>
+      </aside>
+      <main>
+        <header class="hero" id="overview">
+          <p class="kicker">Research review for Zeyar Paing</p>
+          <h2>
+            ResuMate’s<br /><em>Research Foundation</em><br />Established.
+          </h2>
+          <p class="intro">
+            A synthesis of the problem, the evidence reviewed, and the product
+            decisions now grounded in that research.
+          </p>
+        </header>
+        <section id="problem">
+          <p class="section-meta">01 — Starting point</p>
+          <h3>
+            People know their careers. They should not need to know CV writing.
+          </h3>
+          <p class="lede">
+            ResuMate originated from repeated manual CV work: adapting the same
+            career history for different jobs while navigating writing,
+            structure, design, and English-language uncertainty.
+          </p>
+          <div class="grid-2">
+            <div class="panel">
+              <span class="tag">User difficulty</span>
+              <h4>Producing the document</h4>
+              <p>
+                People may know their skills and experiences, yet struggle to
+                express them professionally, decide what belongs, or arrange
+                them in a convincing CV.
+              </p>
+            </div>
+            <div class="panel">
+              <span class="tag">Repeated work</span>
+              <h4>Adapting the same history</h4>
+              <p>
+                Different roles and job posts require different emphasis.
+                Manually revising a single document can be slow and can
+                overwrite useful earlier forms.
+              </p>
+            </div>
+          </div>
+          <blockquote class="quote">
+            The user should provide <em>career facts</em>. ResuMate should turn
+            those facts into professional, relevant, readable CVs—and preserve
+            the work for reuse.
+          </blockquote>
+          <p class="source">
+            <strong>Research basis:</strong> Research Foundation §§1–2, 4, 9.
+          </p>
+        </section>
+        <section id="method">
+          <p class="section-meta">02 — Research approach</p>
+          <h3>
+            Research compared product intent with evidence, rather than letting
+            any one reference dictate the product.
+          </h3>
+          <div class="steps">
+            <div>
+              <b>01 / DISCOVERY</b
+              ><span>Original Why / Whom / What / Where / How</span>
+            </div>
+            <div>
+              <b>02 / REALITY</b><span>Existing ResuMate prototype audit</span>
+            </div>
+            <div>
+              <b>03 / MARKET</b
+              ><span>Hands-on competitor and workflow study</span>
+            </div>
+            <div>
+              <b>04 / GUIDANCE</b
+              ><span>CV quality, UX, and design references</span>
+            </div>
+            <div>
+              <b>05 / CONSTRAINTS</b
+              ><span>ATS parsing and regional conventions</span>
+            </div>
+          </div>
+          <p>
+            Sources were treated differently according to their role: developer
+            discovery establishes intent; the prototype audit establishes
+            current reality; competitors and external references provide
+            supporting evidence; unresolved questions remain unresolved.
+          </p>
+          <p class="source">
+            <strong>Research basis:</strong> Research Foundation §§0, 3, 28,
+            34–35.
+          </p>
+        </section>
+        <section id="evidence">
+          <p class="section-meta">03 — Evidence reviewed</p>
+          <h3>The research covered the CV problem from multiple angles.</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Area</th>
+                <th>Question explored</th>
+                <th>Evidence used</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Product discovery</td>
+                <td>
+                  Who is ResuMate helping, and what makes the problem difficult?
+                </td>
+                <td>
+                  Developer’s original product thinking, user scenarios, and
+                  project context.
+                </td>
+              </tr>
+              <tr>
+                <td>Existing product</td>
+                <td>
+                  What is already present and what needs careful future work?
+                </td>
+                <td>ResuMate technical audit and session handoff.</td>
+              </tr>
+              <tr>
+                <td>Competitors</td>
+                <td>
+                  What reusable patterns and limits exist in current resume
+                  products?
+                </td>
+                <td>
+                  HelloCV hands-on analysis, Teal workflow, Rezi diagnostics,
+                  Canva references.
+                </td>
+              </tr>
+              <tr>
+                <td>External practice</td>
+                <td>What makes a CV effective and parsable?</td>
+                <td>
+                  Harvard Career Services and Workday resume parsing
+                  documentation.
+                </td>
+              </tr>
+              <tr>
+                <td>UX &amp; context</td>
+                <td>
+                  How should questions, review, localization, and output adapt?
+                </td>
+                <td>
+                  GOV.UK patterns, regional considerations, and user scenarios.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="source">
+            <strong>Research basis:</strong> Research Foundation §28 and
+            Appendix A.
+          </p>
+        </section>
+        <section id="competitors">
+          <p class="section-meta">04 — Competitor findings</p>
+          <h3>
+            Competitors supplied useful patterns. ResuMate remains the subject
+            and retains its own model.
+          </h3>
+          <div class="grid-2">
+            <div class="panel">
+              <span class="tag">HelloCV</span>
+              <h4>Useful as a feature and UX reference</h4>
+              <p>
+                Hands-on analysis covered AI profile creation, upload, editing,
+                agent tools, job-related features, and more. It reinforces that
+                existing CV import and AI-assisted workflows are important entry
+                points.
+              </p>
+              <p>
+                <strong>Research distinction:</strong> observed flows do not
+                replace ResuMate’s Version → Variation career-state branching.
+              </p>
+            </div>
+            <div class="panel">
+              <span class="tag">Teal</span>
+              <h4>Reusable foundation + job-context tailoring</h4>
+              <p>
+                Teal supports the insight that content can be selected,
+                reordered, and reused rather than rewritten from zero. Tailoring
+                should be driven by relevance to a specific job context.
+              </p>
+              <p>
+                <strong>Research distinction:</strong> its “master resume”
+                pattern is evidence, not a reason to erase Version and
+                Variation.
+              </p>
+            </div>
+            <div class="panel">
+              <span class="tag">Rezi</span>
+              <h4>Diagnostics, not an ATS promise</h4>
+              <p>
+                Rezi’s score explanation supports treating a score as a way to
+                identify weaknesses and opportunities—not as the exact score an
+                employer’s ATS will produce.
+              </p>
+            </div>
+            <div class="panel">
+              <span class="tag">Canva</span>
+              <h4>Visual expectations and template variety</h4>
+              <p>
+                Canva illustrates demand for different visual styles and
+                template customization. It is a presentation reference, not a
+                content model to copy.
+              </p>
+            </div>
+          </div>
+          <p class="source">
+            <strong>Research basis:</strong> Research Foundation §§13, 15, 17,
+            21, 34; HelloCV feature-analysis repository.
+          </p>
+        </section>
+        <section id="quality">
+          <p class="section-meta">05 — CV quality &amp; ATS</p>
+          <h3>
+            A strong CV is both readable to a person and dependable for a system
+            to parse.
+          </h3>
+          <p class="lede">
+            Quality is multidimensional: there is no meaningful single number
+            that can replace professional judgment, context, and evidence.
+          </p>
+          <div class="quality">
+            <span>Truthfulness</span><span>Professional writing</span
+            ><span>Specificity</span><span>Relevance</span
+            ><span>Readability</span><span>Information hierarchy</span
+            ><span>ATS compatibility</span><span>Visual quality</span>
+          </div>
+          <div class="balance">
+            <div class="side">
+              <h4>Human readability</h4>
+              <p>
+                A reviewer should quickly understand the person’s identity,
+                relevant experience, important skills, and evidence.
+              </p>
+            </div>
+            <div class="plus">+</div>
+            <div class="side">
+              <h4>Machine readability</h4>
+              <p>
+                Clear sections, jobs, dates, and less risky formatting support
+                dependable extraction.
+              </p>
+            </div>
+          </div>
+          <blockquote class="quote">
+            ATS should be presented as <em>explainable diagnostic guidance</em>:
+            parseability, structure, consistency, relevance, formatting risk,
+            and improvement suggestions—not a magic universal score.
+          </blockquote>
+          <p class="source">
+            <strong>Research basis:</strong> Harvard Career Services; Workday
+            Resume REST API; Rezi Score explanation; Research Foundation
+            §§10–15.
+          </p>
+        </section>
+        <section id="ai">
+          <p class="section-meta">06 — AI assistance &amp; truth</p>
+          <h3>AI can remove the writing barrier without inventing a career.</h3>
+          <p>
+            Some users can describe what they did and what they know but cannot
+            produce polished English CV writing. That is exactly where ResuMate
+            should help—while keeping every important claim grounded in
+            user-provided evidence.
+          </p>
+          <div class="boundary">
+            <div class="may">
+              <h4>AI may transform supported facts</h4>
+              <ul>
+                <li>Write professional summaries and experience bullets</li>
+                <li>Organize, clarify, prioritize, and tailor content</li>
+                <li>Improve wording and section emphasis</li>
+                <li>Ask factual follow-up questions</li>
+                <li>Explain why a change was suggested</li>
+              </ul>
+            </div>
+            <div class="cannot">
+              <h4>AI must not fabricate unsupported facts</h4>
+              <ul>
+                <li>Employers, responsibilities, or management experience</li>
+                <li>Metrics, revenue gains, team sizes, or achievements</li>
+                <li>Certifications, technologies, qualifications, or skills</li>
+                <li>Any claim lacking user evidence</li>
+              </ul>
+            </div>
+          </div>
+          <p class="source">
+            <strong>Research basis:</strong> Research Foundation §9; original
+            product discovery context.
+          </p>
+        </section>
+        <section id="paths">
+          <p class="section-meta">07 — Input &amp; existing CVs</p>
+          <h3>
+            CV creation is flexible. Job context is optional and may arrive in
+            any order.
+          </h3>
+          <div class="grid-3">
+            <div class="panel">
+              <span class="tag">General CV</span>
+              <h4>Career facts → professional CV</h4>
+              <p>
+                No target role, JD, or requirements are required to create or
+                improve a base CV.
+              </p>
+            </div>
+            <div class="panel">
+              <span class="tag">Targeted CV</span>
+              <h4>Facts + role / JD → tailored CV</h4>
+              <p>
+                A target role, actual job post, requirements, or a JD pasted
+                first can all provide useful context.
+              </p>
+            </div>
+            <div class="panel">
+              <span class="tag">Existing CV</span>
+              <h4>Upload → user chooses next move</h4>
+              <p>
+                PDF, DOCX, image, or text can be used as a primary entry path.
+              </p>
+            </div>
+          </div>
+          <div class="flow">
+            <div class="flow-origin">Original<br />CV</div>
+            <div class="arrow">→</div>
+            <div class="choices">
+              <div>
+                <h4>Use as-is</h4>
+                <p>
+                  Use the supplied CV directly. Enhancement is not mandatory.
+                </p>
+              </div>
+              <div>
+                <h4>Enhance</h4>
+                <p>
+                  Create an improved copy / Version for structure, content, ATS,
+                  or design work.
+                </p>
+              </div>
+              <div>
+                <h4>Tailor</h4>
+                <p>
+                  Preserve the original and branch a copy into a
+                  target/JD-specific Variation.
+                </p>
+              </div>
+            </div>
+          </div>
+          <p class="source">
+            <strong>Research basis:</strong> Research Foundation §§8, 17–18.
+          </p>
+        </section>
+        <section id="version-variation">
+          <p class="section-meta">08 — Core product model</p>
+          <h3>
+            Version preserves a meaningful career direction. Variation adapts
+            that Version to a hiring context.
+          </h3>
+          <div class="version-map">
+            <div class="profile-node">Private<br />User Profile</div>
+            <div class="career-branches">
+              <div class="career">
+                <strong>Version A<br />3D Creative Career</strong
+                ><span>3D Modeler<br />Variation</span
+                ><span>Animator<br />Variation</span
+                ><span>Storyboard<br />Variation</span>
+              </div>
+              <div class="career">
+                <strong>Version B<br />Software Development Career</strong
+                ><span>Frontend<br />Variation</span
+                ><span>Backend<br />Variation</span
+                ><span>Fullstack<br />Variation</span>
+              </div>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="panel">
+              <span class="tag">Version</span>
+              <h4>A meaningful base career state</h4>
+              <p>
+                A new Version is appropriate when professional identity changes
+                substantially—such as education, skills, projects, experience,
+                and direction moving from a 3D creative career to software
+                development.
+              </p>
+            </div>
+            <div class="panel">
+              <span class="tag">Variation</span>
+              <h4>A derived CV for a particular context</h4>
+              <p>
+                A Variation comes from one Version and adapts it to a target
+                role, actual hiring post, requirements, company context, or
+                another tailoring goal.
+              </p>
+            </div>
+          </div>
+          <blockquote class="quote">
+            <em>Position ≠ Variation.</em> One Frontend Developer role can
+            produce different Variations for Company A, Company B, and Company C
+            because each job description defines a different context.
+          </blockquote>
+          <p>
+            The user chooses an <strong>Active CV Form</strong>—a Version or
+            Variation currently used for job seeking. This is not a public
+            profile. A Variation does not overwrite its parent Version.
+          </p>
+          <p class="source">
+            <strong>Research basis:</strong> Research Foundation §§1, 6.1–6.5,
+            17.4, 19.
+          </p>
+        </section>
+        <section id="presentation">
+          <p class="section-meta">09 — Presentation &amp; localization</p>
+          <h3>
+            Content state, template choice, and regional convention are separate
+            concerns.
+          </h3>
+          <div class="layers">
+            <div class="panel">
+              <span class="tag">Content layer</span>
+              <h4>Version / Variation changes the CV’s state and context.</h4>
+              <p>
+                It determines which real career facts, wording, selection,
+                ordering, and job-specific emphasis form the CV.
+              </p>
+            </div>
+            <div class="panel">
+              <span class="tag">Template layer</span>
+              <h4>Template changes how content is presented.</h4>
+              <p>
+                It can change layout, typography, spacing, color, and
+                photo/no-photo treatment without inherently changing the content
+                source.
+              </p>
+            </div>
+          </div>
+          <p>
+            Localization is a first-class finding: photo, age, national/identity
+            or passport-related information can be expected, unsuitable, or
+            sensitive depending on region, industry, and employer/job context.
+            Harvard’s U.S.-oriented guidance is valuable evidence, not a
+            universal worldwide CV rule.
+          </p>
+          <p class="source">
+            <strong>Research basis:</strong> Research Foundation §§13, 16, 19;
+            Canva and Harvard references.
+          </p>
+        </section>
+        <section id="scope">
+          <p class="section-meta">10 — Current scope boundary</p>
+          <h3>
+            The current foundation is CV-focused. Related career-platform
+            features are later scope.
+          </h3>
+          <div class="scope">
+            <div class="now">
+              <h4>Strong MVP priority</h4>
+              <ul>
+                <li>Private User Profile</li>
+                <li>CV creation by form or AI/chat</li>
+                <li>Existing CV import and use as-is</li>
+                <li>Professional AI wording</li>
+                <li>Quality / ATS diagnostics</li>
+                <li>Role and JD-aware tailoring</li>
+                <li>Version and Variation management</li>
+                <li>Original preservation</li>
+                <li>Template switching and localization</li>
+                <li>PDF output and user review</li>
+              </ul>
+            </div>
+            <div class="later">
+              <h4>Future / later phases</h4>
+              <ul>
+                <li>Job search engine and external job APIs</li>
+                <li>Application tracking and lifecycle</li>
+                <li>Live job-seeking agent</li>
+                <li>Public Portfolio website</li>
+                <li>Advanced public career profile concepts</li>
+                <li>Agency / enterprise multi-client workspace</li>
+                <li>Bulk agency workflows</li>
+                <li>External integrations and monetization refinement</li>
+              </ul>
+            </div>
+          </div>
+          <p class="source">
+            <strong>Research basis:</strong> Research Foundation §§6–7, 20, 31.
+          </p>
+        </section>
+        <section id="foundation">
+          <p class="section-meta">11 — Current foundation</p>
+          <h3>What research has established—and what should happen next.</h3>
+          <div class="foundation">
+            <div>
+              <b>USER PROMISE</b
+              ><span>Career facts become professional CVs.</span>
+            </div>
+            <div>
+              <b>AI BOUNDARY</b
+              ><span>Transform facts; never fabricate them.</span>
+            </div>
+            <div>
+              <b>CONTROL</b><span>Preserve originals and review changes.</span>
+            </div>
+            <div>
+              <b>DOMAIN</b
+              ><span
+                >Versions preserve direction; Variations tailor context.</span
+              >
+            </div>
+            <div>
+              <b>QUALITY</b><span>Readable, relevant, ATS-aware output.</span>
+            </div>
+            <div>
+              <b>FLEXIBILITY</b
+              ><span>Multiple input paths; optional job context.</span>
+            </div>
+            <div>
+              <b>PRESENTATION</b
+              ><span>Content and templates are independent.</span>
+            </div>
+            <div>
+              <b>CONTEXT</b><span>Localization matters long-term.</span>
+            </div>
+          </div>
+          <div class="next">
+            <h4>Research Foundation Established</h4>
+            <p>
+              Research remains a living layer as hiring practices, AI
+              technology, ATS systems, and user needs evolve.
+            </p>
+            <ol>
+              <li>Domain Modeling</li>
+              <li>AI Architecture</li>
+              <li>Agentic SDLC</li>
+              <li>System Design</li>
+            </ol>
+          </div>
+          <p class="source">
+            <strong>Research basis:</strong> Research Foundation §§29–40.
+          </p>
+        </section>
+        <section id="references">
+          <p class="section-meta">12 — References</p>
+          <h3>Source snapshot</h3>
+          <div class="references">
+            <div>
+              <b>PRIMARY PRODUCT INTENT</b>Developer’s answers; session handoff;
+              historical discussion used as non-authoritative context only.
+            </div>
+            <div>
+              <b>PROJECT REALITY</b>Existing technical audit and documented
+              ResuMate prototype flows.
+            </div>
+            <div>
+              <b>HELLOCV</b>Hands-on feature-analysis repository and hello.cv
+              references.
+            </div>
+            <div>
+              <b>TEAL</b>Build, tailoring, designer, and presentation guidance
+              documented in the research foundation.
+            </div>
+            <div>
+              <b>REZI</b>Rezi Score explanation and AI tailoring discussion.
+            </div>
+            <div>
+              <b>HARVARD CAREER SERVICES</b>Guidance on strong resume writing,
+              structure, readability, and tailoring.
+            </div>
+            <div>
+              <b>WORKDAY</b>Resume REST API documentation on parsing and
+              extraction considerations.
+            </div>
+            <div>
+              <b>CANVA</b>Resume templates and creation guidance as
+              visual/template references.
+            </div>
+            <div>
+              <b>GOV.UK DESIGN SYSTEM</b>Question-page and check-answer patterns
+              as general UX references.
+            </div>
+            <div>
+              <b>FULL REFERENCE LIST</b>See Research Foundation §§34–35 and
+              Appendix A–B for source details and URLs.
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script>
+      (() => {
+        const links = [...document.querySelectorAll("nav a")],
+          sections = links
+            .map((a) => document.querySelector(a.getAttribute("href")))
+            .filter(Boolean);
+        function setCurrent() {
+          const marker = scrollY + Math.max(140, innerHeight * 0.24);
+          let current = sections[0];
+          for (const section of sections)
+            if (section.offsetTop <= marker) current = section;
+          links.forEach((a) =>
+            a.classList.toggle(
+              "current",
+              a.getAttribute("href") === `#${current.id}`,
+            ),
+          );
+        }
+        addEventListener("scroll", setCurrent, { passive: true });
+        addEventListener("resize", setCurrent);
+        setCurrent();
+      })();
+    </script>
+  </body>
+</html>
