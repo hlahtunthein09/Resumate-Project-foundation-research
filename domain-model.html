@@ -1,0 +1,1218 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="ResuMate Domain Model v1 — approved research foundation"
+    />
+    <title>ResuMate — Domain Model v1</title>
+    <style>
+      :root {
+        --ink: #17302b;
+        --body: #3e514c;
+        --muted: #6d7c77;
+        --line: #d9e1dc;
+        --paper: #fbfcfa;
+        --page: #eef3f0;
+        --green: #276b56;
+        --mint: #dceee4;
+        --amber: #e8d8ae;
+        --coral: #b9614d;
+        --serif: Georgia, "Times New Roman", serif;
+        --sans: Arial, Helvetica, sans-serif;
+        --mono: Consolas, "Courier New", monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        color: var(--body);
+        background: var(--page);
+        font: 16px/1.65 var(--sans);
+      }
+      a {
+        color: inherit;
+      }
+      .shell {
+        display: grid;
+        grid-template-columns: 292px minmax(0, 1fr);
+        max-width: 1560px;
+        min-height: 100vh;
+        margin: auto;
+        background: var(--paper);
+        box-shadow: 0 0 60px rgba(21, 47, 40, 0.07);
+      }
+      aside {
+        position: sticky;
+        top: 0;
+        align-self: start;
+        height: 100vh;
+        overflow-y: auto;
+        padding: 38px 27px 30px;
+        border-right: 1px solid var(--line);
+        background: #f6f8f5;
+      }
+      .brand {
+        display: block;
+        margin-bottom: 28px;
+        color: var(--ink);
+        text-decoration: none;
+      }
+      .brand-mark {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--green);
+        font: 700 12px/1 var(--mono);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+      .brand-mark::before {
+        display: grid;
+        place-items: center;
+        width: 20px;
+        height: 20px;
+        content: "R";
+        color: white;
+        background: var(--green);
+        font: 700 12px/1 var(--serif);
+      }
+      .brand h1 {
+        margin: 13px 0 7px;
+        color: var(--ink);
+        font: 600 28px/0.98 var(--serif);
+        letter-spacing: -0.04em;
+      }
+      .brand p,
+      .aside-note {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.45;
+      }
+      .series {
+        margin: 0 0 25px;
+        padding: 14px;
+        border: 1px solid var(--line);
+        background: white;
+      }
+      .series b,
+      .nav-label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--muted);
+        font: 700 10px/1 var(--mono);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+      .series a {
+        display: block;
+        margin: 5px 0;
+        color: var(--green);
+        font-size: 12px;
+        text-decoration: none;
+      }
+      .series .current {
+        color: var(--ink);
+        font-weight: 700;
+      }
+      nav a {
+        display: block;
+        padding: 7px 9px;
+        border-left: 2px solid transparent;
+        color: #66746f;
+        text-decoration: none;
+        font-size: 13px;
+        line-height: 1.25;
+      }
+      nav a:hover,
+      nav a:focus-visible,
+      nav a.current {
+        border-left-color: var(--coral);
+        color: var(--ink);
+        background: #eaf1ec;
+        outline: none;
+      }
+      .aside-note {
+        margin-top: 30px;
+        padding-top: 17px;
+        border-top: 1px solid var(--line);
+        font-size: 12px;
+      }
+      main {
+        min-width: 0;
+        padding: 0 clamp(26px, 6vw, 100px) 80px;
+      }
+      .hero {
+        min-height: 400px;
+        display: flex;
+        flex-direction: column;
+        justify-content: end;
+        padding: 74px 0 62px;
+        border-bottom: 1px solid var(--line);
+      }
+      .kicker,
+      .section-meta {
+        margin: 0 0 18px;
+        color: var(--green);
+        font: 700 11px/1 var(--mono);
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+      }
+      .hero h2 {
+        max-width: 900px;
+        margin: 0;
+        color: var(--ink);
+        font: 600 clamp(46px, 6vw, 84px) / 0.95 var(--serif);
+        letter-spacing: -0.055em;
+      }
+      .hero h2 em {
+        color: var(--green);
+      }
+      .intro {
+        max-width: 740px;
+        margin: 26px 0 0;
+        font-size: 20px;
+        line-height: 1.48;
+      }
+      section {
+        max-width: 1040px;
+        padding: 65px 0;
+        border-bottom: 1px solid var(--line);
+        scroll-margin-top: 20px;
+      }
+      section:last-child {
+        border: 0;
+      }
+      .section-meta {
+        margin-bottom: 12px;
+        font-size: 10px;
+      }
+      h3 {
+        max-width: 850px;
+        margin: 0;
+        color: var(--ink);
+        font: 600 clamp(30px, 3.35vw, 48px) / 1.06 var(--serif);
+        letter-spacing: -0.042em;
+      }
+      h4 {
+        margin: 0;
+        color: var(--ink);
+        font-size: 17px;
+        line-height: 1.25;
+      }
+      p {
+        max-width: 800px;
+        margin: 18px 0 0;
+      }
+      .lede {
+        max-width: 820px;
+        color: #2d4640;
+        font-size: 20px;
+        line-height: 1.5;
+      }
+      .source {
+        max-width: 920px;
+        margin-top: 24px;
+        color: var(--muted);
+        font: 11px/1.45 var(--mono);
+      }
+      .grid-2,
+      .grid-3,
+      .invariants {
+        display: grid;
+        gap: 18px;
+        margin-top: 30px;
+      }
+      .grid-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .grid-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .panel {
+        min-width: 0;
+        padding: 23px;
+        border: 1px solid var(--line);
+        background: white;
+      }
+      .panel p {
+        margin-top: 9px;
+        font-size: 14px;
+        line-height: 1.55;
+      }
+      .tag {
+        display: block;
+        margin-bottom: 11px;
+        color: var(--green);
+        font: 700 10px/1 var(--mono);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      .quote {
+        max-width: 880px;
+        margin: 30px 0 0;
+        padding: 28px 32px;
+        border-left: 5px solid var(--coral);
+        background: #f5f8f5;
+        color: var(--ink);
+        font: 600 clamp(23px, 2.35vw, 34px) / 1.18 var(--serif);
+        letter-spacing: -0.03em;
+      }
+      .quote em {
+        color: var(--green);
+      }
+      .diagram {
+        overflow-x: auto;
+        margin-top: 30px;
+        padding: 28px;
+        border: 1px solid var(--line);
+        background: #f4f8f5;
+        color: var(--ink);
+        font: 14px/1.55 var(--mono);
+        white-space: pre;
+      }
+      .diagram strong {
+        color: var(--green);
+      }
+      .rule-list {
+        margin: 25px 0 0;
+        padding: 0;
+        list-style: none;
+      }
+      .rule-list li {
+        position: relative;
+        margin: 9px 0;
+        padding-left: 22px;
+      }
+      .rule-list li::before {
+        position: absolute;
+        left: 0;
+        content: "✓";
+        color: var(--green);
+        font-weight: 700;
+      }
+      .flow {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 1px;
+        margin-top: 30px;
+        border: 1px solid var(--line);
+        background: var(--line);
+      }
+      .flow div {
+        min-width: 0;
+        padding: 18px 15px;
+        background: white;
+      }
+      .flow b {
+        display: block;
+        margin-bottom: 15px;
+        color: var(--green);
+        font: 700 10px/1 var(--mono);
+        letter-spacing: 0.1em;
+      }
+      .flow span {
+        display: block;
+        color: var(--ink);
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 1.25;
+      }
+      .split-rule {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        margin-top: 30px;
+        border: 1px solid var(--line);
+      }
+      .split-rule > div {
+        padding: 26px;
+      }
+      .split-rule .evidence {
+        border-right: 1px solid var(--line);
+        background: var(--mint);
+      }
+      ul {
+        margin: 16px 0 0;
+        padding: 0;
+        list-style: none;
+      }
+      li {
+        position: relative;
+        margin: 7px 0;
+        padding-left: 18px;
+      }
+      li::before {
+        position: absolute;
+        left: 0;
+        content: "•";
+        color: var(--green);
+      }
+      .warning li::before {
+        content: "×";
+        color: var(--coral);
+        font-weight: 700;
+      }
+      table {
+        width: 100%;
+        margin-top: 30px;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      th,
+      td {
+        padding: 15px 12px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+        text-align: left;
+        line-height: 1.45;
+      }
+      th {
+        color: var(--green);
+        font: 700 10px/1.2 var(--mono);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      td:first-child {
+        width: 27%;
+        color: var(--ink);
+        font-weight: 700;
+      }
+      .invariants {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .invariants div {
+        min-width: 0;
+        padding: 18px;
+        border-top: 4px solid var(--ink);
+        background: white;
+      }
+      .invariants b {
+        display: block;
+        color: var(--green);
+        font: 700 10px/1 var(--mono);
+        letter-spacing: 0.09em;
+      }
+      .invariants span {
+        display: block;
+        margin-top: 19px;
+        color: var(--ink);
+        font-weight: 700;
+        line-height: 1.25;
+      }
+      .scope {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+        margin-top: 30px;
+      }
+      .scope > div {
+        padding: 25px;
+        border: 1px solid var(--line);
+      }
+      .scope .now {
+        border-color: #bfdcc9;
+        background: var(--mint);
+      }
+      .scope ul {
+        columns: 2;
+        column-gap: 24px;
+      }
+      .scope li {
+        break-inside: avoid;
+        font-size: 14px;
+      }
+      .scope .later li::before {
+        color: #bd8a25;
+      }
+      .next {
+        margin-top: 30px;
+        padding: 28px 30px;
+        background: var(--ink);
+        color: white;
+      }
+      .next h4 {
+        color: var(--mint);
+        font: 600 28px/1.1 var(--serif);
+      }
+      .next p {
+        color: #e1ebe5;
+      }
+      .next ol {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        margin: 23px 0 0;
+        padding: 0;
+        list-style: none;
+        counter-reset: stage;
+      }
+      .next li {
+        padding: 0;
+        color: #e1ebe5;
+        font-size: 14px;
+      }
+      .next li::before {
+        position: static;
+        display: block;
+        margin-bottom: 8px;
+        content: "0" counter(stage);
+        counter-increment: stage;
+        color: var(--amber);
+        font: 700 10px var(--mono);
+      }
+      .next a {
+        color: white;
+        text-decoration-color: var(--amber);
+        text-underline-offset: 3px;
+      }
+      @media (max-width: 980px) {
+        .shell {
+          grid-template-columns: 235px minmax(0, 1fr);
+        }
+        aside {
+          padding: 30px 19px;
+        }
+        main {
+          padding-left: 42px;
+          padding-right: 42px;
+        }
+        .grid-3 {
+          grid-template-columns: 1fr;
+        }
+        .flow {
+          grid-template-columns: repeat(3, 1fr);
+        }
+        .invariants {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 720px) {
+        .shell {
+          display: block;
+        }
+        aside {
+          position: relative;
+          height: auto;
+          padding: 24px;
+          border-right: 0;
+          border-bottom: 1px solid var(--line);
+        }
+        .brand {
+          margin-bottom: 20px;
+        }
+        .series {
+          margin-bottom: 18px;
+        }
+        nav {
+          display: flex;
+          gap: 4px;
+          overflow-x: auto;
+          padding-bottom: 4px;
+        }
+        nav a {
+          flex: 0 0 auto;
+          border-left: 0;
+          border-bottom: 2px solid transparent;
+        }
+        nav a:hover,
+        nav a:focus-visible,
+        nav a.current {
+          border-left-color: transparent;
+          border-bottom-color: var(--coral);
+        }
+        .aside-note {
+          display: none;
+        }
+        main {
+          padding: 0 24px 50px;
+        }
+        .hero {
+          min-height: 335px;
+          padding: 50px 0;
+        }
+        .hero h2 {
+          font-size: clamp(40px, 12vw, 62px);
+        }
+        .intro,
+        .lede {
+          font-size: 18px;
+        }
+        section {
+          padding: 48px 0;
+        }
+        .grid-2,
+        .scope,
+        .split-rule {
+          grid-template-columns: 1fr;
+        }
+        .split-rule .evidence {
+          border-right: 0;
+          border-bottom: 1px solid var(--line);
+        }
+        .flow {
+          grid-template-columns: 1fr 1fr;
+        }
+        .invariants {
+          grid-template-columns: 1fr;
+        }
+        .scope ul {
+          columns: 1;
+        }
+        .next ol {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      @media print {
+        @page {
+          margin: 15mm;
+        }
+        body {
+          background: white;
+          font-size: 11pt;
+        }
+        .shell {
+          display: block;
+          max-width: none;
+          box-shadow: none;
+        }
+        aside {
+          display: none;
+        }
+        main {
+          padding: 0;
+        }
+        .hero {
+          min-height: auto;
+          padding: 0 0 28px;
+        }
+        section {
+          padding: 28px 0;
+          break-inside: avoid;
+        }
+        .grid-3,
+        .invariants {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .source {
+          font-size: 8pt;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <aside aria-label="Domain model report navigation">
+        <a class="brand" href="#overview"
+          ><span class="brand-mark">ResuMate</span>
+          <h1>Domain Model<br />v1</h1>
+          <p>Approved research foundation<br />26 August 2026</p></a
+        >
+        <div class="series">
+          <b>Research series</b><a href="index.html">← Research Foundation</a
+          ><a class="current" href="domain-model.html">Domain Model v1</a
+          ><a href="#next-stage">AI Architecture — next</a>
+        </div>
+        <p class="nav-label">Domain index</p>
+        <nav>
+          <a href="#overview">Overview</a
+          ><a href="#purpose">Purpose &amp; authority</a
+          ><a href="#core-model">Core model</a
+          ><a href="#identities">Version &amp; Variation</a
+          ><a href="#active">Active CV</a
+          ><a href="#ownership">Snapshot ownership</a
+          ><a href="#truth">Evidence &amp; AI truth</a
+          ><a href="#import">Existing Resume import</a
+          ><a href="#context">Job Context</a
+          ><a href="#presentation">Template &amp; localization</a
+          ><a href="#invariants">Hard invariants</a
+          ><a href="#scope">MVP boundary</a><a href="#next-stage">Next stage</a>
+        </nav>
+        <p class="aside-note">
+          Primary source of truth:<br /><strong
+            >RESUMATE-DOMAIN-MODEL-V1.md</strong
+          ><br /><br />Conceptual domain foundation — not a database schema, API
+          contract, AI architecture, or system design.
+        </p>
+      </aside>
+      <main>
+        <header class="hero" id="overview">
+          <p class="kicker">
+            Research report · Domain Model Cross-Check, Stages 1–18
+          </p>
+          <h2>
+            ResuMate<br /><em>Domain Model v1</em><br />Approved Foundation.
+          </h2>
+          <p class="intro">
+            The product meaning, relationships, lifecycle behavior, invariants,
+            and scope boundaries that later AI Architecture and System Design
+            must respect.
+          </p>
+        </header>
+
+        <section id="purpose">
+          <p class="section-meta">01 — Purpose &amp; authority</p>
+          <h3>
+            Domain Model v1 makes the product’s meaning explicit before
+            technical architecture begins.
+          </h3>
+          <p class="lede">
+            It records what ResuMate concepts mean, how they relate, which rules
+            must not be broken, and which choices deliberately remain for later
+            technical design.
+          </p>
+          <div class="grid-3">
+            <div class="panel">
+              <span class="tag">It defines</span>
+              <h4>Product meaning</h4>
+              <p>
+                Conceptual objects, ownership, relationships, lifecycle
+                behavior, rules, edge cases, and MVP boundaries.
+              </p>
+            </div>
+            <div class="panel">
+              <span class="tag">It does not define</span>
+              <h4>Technical implementation</h4>
+              <p>
+                No database tables, API contracts, JSON schema, storage engine,
+                agent boundaries, or rendering architecture are locked here.
+              </p>
+            </div>
+            <div class="panel">
+              <span class="tag">Authority order</span>
+              <h4>Explicit product truth wins</h4>
+              <p>
+                Latest product-owner decision → Domain Model Cross-Check →
+                Research Foundation → external references → generic assumptions.
+              </p>
+            </div>
+          </div>
+          <p class="source"><strong>Source:</strong> Domain Model v1 §§0–1.</p>
+        </section>
+
+        <section id="core-model">
+          <p class="section-meta">02 — Core conceptual model</p>
+          <h3>
+            A private account organizes independent Resumes, grouped by Version
+            and Variation.
+          </h3>
+          <div class="diagram" aria-label="Core domain diagram">
+            <strong>USER</strong> │ ├── User Profile
+            <span>(private account data)</span> │ ├── Version 1
+            <span>(standalone Resume)</span> │ ├── Variation 1 │ ├── Variation 2
+            │ └── Variation N │ ├── Version 2 <span>(standalone Resume)</span> │
+            └── Variation 1 │ └── Active CV Selection <span>(0..1)</span>
+            └── references one existing Version OR Variation
+
+            <strong>PLATFORM</strong>
+            └── Template Library
+            <span>(shared reusable presentation definitions)</span>
+          </div>
+          <p>
+            A Version or Variation is a standalone Resume snapshot. Variations
+            are grouped under one root Version; the UI stays flat even when
+            internal provenance knows a Variation was created from another
+            Variation.
+          </p>
+          <p class="source">
+            <strong>Source:</strong> Domain Model v1 §2; §5.3; §29.
+          </p>
+        </section>
+
+        <section id="identities">
+          <p class="section-meta">03 — Resume identities</p>
+          <h3>
+            Version and Variation are not cosmetic labels. Their creation rules
+            define their identity.
+          </h3>
+          <div class="grid-2">
+            <div class="panel">
+              <span class="tag">Version</span>
+              <h4>A distinct persisted base Resume entry</h4>
+              <p>
+                New creation, import/save, or explicit Duplicate Version creates
+                a Version. Similarity does not merge independently created
+                Resumes, and a Version can exist without Variations.
+              </p>
+            </div>
+            <div class="panel">
+              <span class="tag">Variation</span>
+              <h4>A saved branch from a persisted Resume</h4>
+              <p>
+                Tailoring, enhancement, ATS improvement, rewriting, or custom
+                editing may produce a Variation only when the user saves that
+                branch.
+              </p>
+            </div>
+          </div>
+          <div class="flow">
+            <div>
+              <b>CREATE / IMPORT</b><span>Temporary Working State</span>
+            </div>
+            <div><b>PREVIEW</b><span>User reviews content</span></div>
+            <div><b>SAVE</b><span>Persisted Version</span></div>
+            <div><b>EDIT / TAILOR</b><span>New Working State</span></div>
+            <div><b>SAVE BRANCH</b><span>Persisted Variation</span></div>
+          </div>
+          <blockquote class="quote">
+            <em>Position ≠ Variation.</em> A Frontend role can have several
+            Variations because Company A, B, and C describe different job
+            contexts. A Variation can also exist without a position or JD.
+          </blockquote>
+          <p class="source">
+            <strong>Source:</strong> Domain Model v1 §§4–6, §19.
+          </p>
+        </section>
+
+        <section id="active">
+          <p class="section-meta">04 — Active CV model</p>
+          <h3>
+            Active CV is an optional user selection, not another Resume type or
+            a public profile.
+          </h3>
+          <div class="grid-3">
+            <div class="panel">
+              <span class="tag">Cardinality</span>
+              <h4>Zero or one</h4>
+              <p>
+                A personal user may have no Active CV, one Active Version, or
+                one Active Variation.
+              </p>
+            </div>
+            <div class="panel">
+              <span class="tag">Future role</span>
+              <h4>Job-seeking context</h4>
+              <p>
+                Resume-building works without an Active CV. The selection mainly
+                guides later job-seeking capabilities.
+              </p>
+            </div>
+            <div class="panel">
+              <span class="tag">Deletion</span>
+              <h4>No automatic replacement</h4>
+              <p>
+                Deleting the referenced Resume clears Active CV. ResuMate must
+                not silently select another one.
+              </p>
+            </div>
+          </div>
+          <p>
+            “Possible outdated” is not determined by age alone. Newer relevant
+            career evidence can trigger an explanation and recommendation, but
+            the user decides whether to retain, edit, or replace the Active CV.
+          </p>
+          <p class="source"><strong>Source:</strong> Domain Model v1 §7.</p>
+        </section>
+
+        <section id="ownership">
+          <p class="section-meta">05 — Snapshot ownership &amp; lifecycle</p>
+          <h3>Every persisted Resume owns its own content snapshot.</h3>
+          <p class="lede">
+            Domain Model v1 deliberately rejects a shared mutable Career Facts
+            object. Editing one Resume must never silently change another
+            Resume.
+          </p>
+          <div class="split-rule">
+            <div class="evidence">
+              <h4>Resume-local content</h4>
+              <ul>
+                <li>Personal details</li>
+                <li>Education and work experience</li>
+                <li>Skills, projects, certifications, languages</li>
+                <li>Accepted AI-generated wording</li>
+                <li>Optional Job Context and selected Template</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Ownership boundaries</h4>
+              <ul>
+                <li>
+                  User Profile is private account-operating data, not a career
+                  profile.
+                </li>
+                <li>
+                  Account owner and Resume subject can be different people.
+                </li>
+                <li>
+                  Duplicate Version has no future mutable link to its source.
+                </li>
+                <li>
+                  Working State is temporary, not a persisted Resume entity.
+                </li>
+              </ul>
+            </div>
+          </div>
+          <p>
+            Lifecycle is intentionally minimal: create/import → temporary
+            working state → preview → save → persisted Resume. Archive, full
+            revision history, and Trash/restore are future scope; MVP uses
+            confirmed direct deletion.
+          </p>
+          <p class="source">
+            <strong>Source:</strong> Domain Model v1 §§3, 4.3–4.6, 9, 18–20.
+          </p>
+        </section>
+
+        <section id="truth">
+          <p class="section-meta">06 — Evidence &amp; AI truth</p>
+          <h3>
+            AI may create professional narrative, but it cannot manufacture
+            career evidence.
+          </h3>
+          <div class="split-rule">
+            <div class="evidence">
+              <h4>Evidence-like fields</h4>
+              <ul>
+                <li>Employer, position, and dates</li>
+                <li>Education and certification</li>
+                <li>Project identity and factual skills</li>
+                <li>Awards and measurable results</li>
+              </ul>
+            </div>
+            <div class="warning">
+              <h4>Narrative/presentation fields</h4>
+              <ul>
+                <li>Profile summary and experience description</li>
+                <li>Bullet wording and concise/expanded phrasing</li>
+                <li>Section ordering and emphasis</li>
+                <li>Professional writing based on supported evidence</li>
+              </ul>
+            </div>
+          </div>
+          <p>
+            Factual evidence fields must not be silently altered without user
+            confirmation. When evidence is missing, ResuMate asks, flags a gap,
+            or keeps the claim out—rather than inventing employers, skills,
+            metrics, team sizes, projects, or achievements.
+          </p>
+          <p class="source">
+            <strong>Source:</strong> Domain Model v1 §10; §22 invariants 5–6.
+          </p>
+        </section>
+
+        <section id="import">
+          <p class="section-meta">07 — Existing Resume import</p>
+          <h3>
+            Upload is an input. It becomes a Version only when the user saves or
+            imports it.
+          </h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Path</th>
+                <th>Domain behavior</th>
+                <th>Boundary</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Use As-Is</td>
+                <td>
+                  Original Resume is saved/registered as a Version in its chosen
+                  representation.
+                </td>
+                <td>
+                  The user keeps the original design; extraction can remain on
+                  demand for future features.
+                </td>
+              </tr>
+              <tr>
+                <td>Structured import</td>
+                <td>
+                  Content is extracted, reviewed, mapped, and rendered with a
+                  ResuMate Template before save.
+                </td>
+                <td>
+                  Arbitrary PDF/Word/Canva layouts are not promised
+                  pixel-perfect reconstruction.
+                </td>
+              </tr>
+              <tr>
+                <td>Extract + enhance</td>
+                <td>
+                  User reviews extracted values and may apply enhancements
+                  before first save.
+                </td>
+                <td>Uncertain values are flagged, not guessed.</td>
+              </tr>
+              <tr>
+                <td>Tailor later</td>
+                <td>
+                  Persisted imported Version enters a Working State, then
+                  updates current or saves a Variation.
+                </td>
+                <td>
+                  The original import is not destructively overwritten by
+                  branching.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <p>
+            Unreadable, corrupted, password-protected, or unsupported input must
+            not produce hallucinated content. Ask for a usable file or offer
+            Form/Chat creation instead. Unknown meaningful sections become
+            Custom Sections when no reliable mapping exists.
+          </p>
+          <p class="source">
+            <strong>Source:</strong> Domain Model v1 §§11–14.
+          </p>
+        </section>
+
+        <section id="context">
+          <p class="section-meta">08 — Job Context</p>
+          <h3>
+            Job Context is optional, composable context for orienting or
+            tailoring a Resume.
+          </h3>
+          <div class="grid-3">
+            <div class="panel">
+              <span class="tag">Broader direction</span>
+              <h4>Target Role(s)</h4>
+              <p>
+                One or more roles that fit the Resume evidence, skills,
+                experience, or intended direction.
+              </p>
+            </div>
+            <div class="panel">
+              <span class="tag">Specific opportunity</span>
+              <h4>Applied Position</h4>
+              <p>
+                A more particular position, commonly connected with a hiring
+                opportunity. It is distinct from Target Role.
+              </p>
+            </div>
+            <div class="panel">
+              <span class="tag">Supporting context</span>
+              <h4>JD, requirements &amp; more</h4>
+              <p>
+                Job description, requirements, company, location, employment
+                type, or a complete hiring post can be provided in any
+                combination.
+              </p>
+            </div>
+          </div>
+          <p>
+            AI may parse a hiring post and infer likely context when the title
+            is missing, but the user can confirm or edit it. Job/Application
+            records and auto-apply are future domains; v1 requires no forced
+            auto-tailor or auto-apply behavior.
+          </p>
+          <p class="source"><strong>Source:</strong> Domain Model v1 §15.</p>
+        </section>
+
+        <section id="presentation">
+          <p class="section-meta">09 — Template &amp; localization</p>
+          <h3>
+            Templates render content; localization recommends context-aware
+            presentation without deleting user data.
+          </h3>
+          <div class="grid-2">
+            <div class="panel">
+              <span class="tag">Template</span>
+              <h4>A shared platform presentation definition</h4>
+              <p>
+                Structured Resume content plus a selected Template produces a
+                rendered Resume. Switching Templates changes neither Version nor
+                Variation and must not change content.
+              </p>
+            </div>
+            <div class="panel">
+              <span class="tag">Localization</span>
+              <h4>Contextual, not universal</h4>
+              <p>
+                Target market/region is primary, with user location and user
+                override where relevant. Age, photo, NRC, passport, gender, and
+                marital status are contextual—not universally mandatory.
+              </p>
+            </div>
+          </div>
+          <p>
+            If a Template cannot represent meaningful content or the recommended
+            localized presentation, ResuMate warns, recommends, or adapts. It
+            must not silently drop content. A Myanmar-oriented Version may be
+            tailored into a Singapore/US-oriented Variation.
+          </p>
+          <p class="source">
+            <strong>Source:</strong> Domain Model v1 §§16–17.
+          </p>
+        </section>
+
+        <section id="invariants">
+          <p class="section-meta">10 — Hard invariants</p>
+          <h3>
+            These rules are the model’s non-negotiable product boundaries.
+          </h3>
+          <div class="invariants">
+            <div>
+              <b>ROOT</b
+              ><span
+                >Every persisted Variation belongs to one root Version.</span
+              >
+            </div>
+            <div>
+              <b>SNAPSHOT</b
+              ><span>Editing one Resume cannot mutate another.</span>
+            </div>
+            <div>
+              <b>PRESENTATION</b
+              ><span>Template changes never alter Resume content.</span>
+            </div>
+            <div>
+              <b>TRUTH</b
+              ><span>AI cannot fabricate unsupported career facts.</span>
+            </div>
+            <div>
+              <b>EVIDENCE</b
+              ><span
+                >Factual fields never silently change without
+                confirmation.</span
+              >
+            </div>
+            <div>
+              <b>ACTIVE</b
+              ><span
+                >Active CV references one valid existing Resume, or none.</span
+              >
+            </div>
+            <div><b>PRIVACY</b><span>User Profile remains private.</span></div>
+            <div>
+              <b>IDENTITY</b
+              ><span
+                >New/import/duplicate → Version; saved branch → Variation.</span
+              >
+            </div>
+            <div>
+              <b>CONTROL</b
+              ><span>AI output does not silently become persisted truth.</span>
+            </div>
+          </div>
+          <p class="source"><strong>Source:</strong> Domain Model v1 §22.</p>
+        </section>
+
+        <section id="scope">
+          <p class="section-meta">11 — Edge cases &amp; MVP boundary</p>
+          <h3>
+            The model protects simple MVP behavior while making later expansion
+            possible.
+          </h3>
+          <div class="grid-2">
+            <div class="panel">
+              <span class="tag">Selected edge cases</span>
+              <h4>Explicit behavior</h4>
+              <ul>
+                <li>No work experience does not block Resume creation.</li>
+                <li>
+                  50+ Variations are conceptually allowed; subscription limits
+                  are business policy.
+                </li>
+                <li>
+                  Root deletion can preserve Variations by promoting the oldest
+                  one to root.
+                </li>
+                <li>Missing JD title can be inferred, then user-confirmed.</li>
+                <li>
+                  Missing skill becomes a visible gap, never a fake claim.
+                </li>
+              </ul>
+            </div>
+            <div class="panel">
+              <span class="tag">MVP restraint</span>
+              <h4>Not in this domain build</h4>
+              <ul>
+                <li>Agency multi-client workflows</li>
+                <li>Portfolio implementation</li>
+                <li>Job Platform and Application Lifecycle</li>
+                <li>Custom Template builder</li>
+                <li>Trash/restore and full revision history</li>
+              </ul>
+            </div>
+          </div>
+          <div class="scope">
+            <div class="now">
+              <h4>Current domain foundation</h4>
+              <ul>
+                <li>Private User/Profile</li>
+                <li>Form, AI/Chat, and import creation</li>
+                <li>Use As-Is, extraction/review, enhance, tailor</li>
+                <li>Version / Variation snapshots</li>
+                <li>Active CV selection</li>
+                <li>Templates, localization, diagnostics</li>
+              </ul>
+            </div>
+            <div class="later">
+              <h4>Later technical decisions</h4>
+              <ul>
+                <li>Database tables and JSON schema</li>
+                <li>Storage and rendering engine</li>
+                <li>API contracts and agent boundaries</li>
+                <li>AI memory and temporary-state mechanism</li>
+                <li>Tenant/Agency implementation strategy</li>
+              </ul>
+            </div>
+          </div>
+          <p class="source">
+            <strong>Source:</strong> Domain Model v1 §§23, 25–26.
+          </p>
+        </section>
+
+        <section id="next-stage">
+          <p class="section-meta">12 — Approved foundation → next stage</p>
+          <h3>
+            Domain Model v1 is coherent enough to guide AI Architecture research
+            without pretending to be final architecture.
+          </h3>
+          <div class="next">
+            <h4>Research progression</h4>
+            <p>
+              Senior feedback, new research, and implementation findings may
+              produce explicit revisions. Later work starts from this foundation
+              rather than restarting domain discovery.
+            </p>
+            <ol>
+              <li><a href="index.html">Research Foundation</a></li>
+              <li>Domain Model v1</li>
+              <li>AI Architecture Research</li>
+              <li>System Design</li>
+            </ol>
+          </div>
+          <p class="source">
+            <strong>Source:</strong> Domain Model v1 §§27–31; supporting Stage
+            1–18 research and product-owner answers.
+          </p>
+        </section>
+      </main>
+    </div>
+    <script>
+      (() => {
+        const links = [...document.querySelectorAll("nav a")];
+        const sections = links
+          .map((link) => document.querySelector(link.getAttribute("href")))
+          .filter(Boolean);
+        function setCurrent() {
+          const marker =
+            window.scrollY + Math.max(140, window.innerHeight * 0.24);
+          let current = sections[0];
+          for (const section of sections)
+            if (section.offsetTop <= marker) current = section;
+          links.forEach((link) =>
+            link.classList.toggle(
+              "current",
+              link.getAttribute("href") === `#${current.id}`,
+            ),
+          );
+        }
+        addEventListener("scroll", setCurrent, { passive: true });
+        addEventListener("resize", setCurrent);
+        setCurrent();
+      })();
+    </script>
+  </body>
+</html>
