@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Visual product workflow diagrams for the ResuMate research review."
+    />
+    <title>ResuMate — Product Workflow Diagrams</title>
+    <style>
+      :root {
+        --night: #091010;
+        --night-2: #0e1818;
+        --panel: #122020;
+        --panel-2: #182928;
+        --ink: #e9f4ef;
+        --muted: #a9b9b2;
+        --line: #39504a;
+        --green: #9df2bc;
+        --green-deep: #1d765c;
+        --violet: #d88ce9;
+        --orange: #f4be78;
+        --red: #f08c8c;
+        --mono: Consolas, "Courier New", monospace;
+        --serif: Georgia, "Times New Roman", serif;
+        --sans: Arial, Helvetica, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        color: var(--ink);
+        background:
+          linear-gradient(rgba(157, 242, 188, 0.035) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(157, 242, 188, 0.035) 1px, transparent 1px),
+          var(--night);
+        background-size: 26px 26px;
+        font: 16px/1.55 var(--sans);
+      }
+      a { color: inherit; }
+      .shell { max-width: 1500px; margin: 0 auto; }
+      .topbar {
+        display: flex; align-items: center; justify-content: space-between; gap: 24px;
+        padding: 20px clamp(24px, 5vw, 70px); border-bottom: 1px solid var(--line);
+        background: rgba(9, 16, 16, 0.9); position: sticky; top: 0; z-index: 2;
+        backdrop-filter: blur(16px);
+      }
+      .brand { color: var(--ink); text-decoration: none; }
+      .brand-mark, .eyebrow, .node-label, .diagram-number, .source {
+        font: 700 10px/1.2 var(--mono); letter-spacing: .12em; text-transform: uppercase;
+      }
+      .brand-mark { display: flex; align-items: center; gap: 8px; color: var(--green); }
+      .brand-mark::before { content: "R"; display: grid; place-items: center; width: 20px; height: 20px; background: var(--green); color: var(--night); font: 700 13px/1 var(--serif); }
+      .brand-title { display: block; margin-top: 5px; font: 600 18px/1.1 var(--serif); }
+      .topnav { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px 17px; color: var(--muted); font-size: 13px; }
+      .topnav a { text-decoration-color: rgba(157, 242, 188, .7); text-underline-offset: 4px; }
+      main { padding: 0 clamp(24px, 5vw, 70px) 90px; }
+      .hero { max-width: 880px; padding: 84px 0 60px; }
+      .eyebrow { margin: 0 0 17px; color: var(--green); }
+      h1, h2, h3, p { margin-top: 0; }
+      h1 { margin-bottom: 22px; font: 500 clamp(48px, 7vw, 96px)/.92 var(--serif); letter-spacing: -.06em; }
+      h1 em { color: var(--green); font-style: normal; }
+      .intro { max-width: 720px; color: var(--muted); font-size: 19px; }
+      .principles { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 26px; }
+      .principles span { padding: 6px 9px; border: 1px solid var(--line); color: var(--muted); font: 10px/1.2 var(--mono); }
+      section { padding: 65px 0; border-top: 1px solid var(--line); scroll-margin-top: 70px; }
+      .section-head { display: grid; grid-template-columns: 100px minmax(0, 760px); gap: 25px; margin-bottom: 30px; }
+      .diagram-number { color: var(--green); padding-top: 8px; }
+      h2 { margin: 0; font: 500 clamp(31px, 4vw, 54px)/1.02 var(--serif); letter-spacing: -.04em; }
+      .section-head p { margin: 14px 0 0; color: var(--muted); }
+      .diagram { overflow-x: auto; padding: 4px 0 16px; }
+      .canvas { min-width: 940px; padding: 26px; border: 1px solid var(--line); background: radial-gradient(circle at 50% 0%, rgba(45, 119, 91, .18), transparent 40%), var(--night-2); }
+      .legend { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; color: var(--muted); font-size: 11px; }
+      .legend span::before { content: ""; display: inline-block; width: 8px; height: 8px; margin-right: 6px; background: var(--green); }
+      .legend .muted-dot::before { background: var(--violet); }
+      .legend .warning-dot::before { background: var(--orange); }
+      .journey { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 12px; align-items: stretch; }
+      .node { min-width: 0; padding: 15px; border: 1px solid var(--line); background: var(--panel); box-shadow: inset 0 1px 0 rgba(255,255,255,.04); }
+      .node-label { display: block; margin-bottom: 8px; color: var(--green); font-size: 9px; }
+      .node strong { display: block; font-size: 15px; line-height: 1.18; }
+      .node small { display: block; margin-top: 6px; color: var(--muted); font-size: 11px; line-height: 1.35; }
+      .node.user { border-color: var(--violet); background: #1e1821; }
+      .node.user .node-label { color: var(--violet); }
+      .node.action { border-color: var(--green-deep); background: #132a24; }
+      .node.warning { border-color: #76572f; background: #302616; }
+      .node.warning .node-label { color: var(--orange); }
+      .connector { display: flex; align-items: center; justify-content: center; min-height: 20px; color: var(--green); font: 24px/1 var(--serif); }
+      .c-user { grid-column: 6 / span 2; }
+      .c-login { grid-column: 6 / span 2; }
+      .c-home { grid-column: 5 / span 4; }
+      .c-create { grid-column: 1 / span 3; }
+      .c-upload { grid-column: 5 / span 3; }
+      .c-saved { grid-column: 9 / span 3; }
+      .c-form { grid-column: 1 / span 2; }
+      .c-chat { grid-column: 3 / span 2; }
+      .c-import { grid-column: 5 / span 3; }
+      .c-open { grid-column: 9 / span 3; }
+      .c-as-is { grid-column: 5 / span 1; }
+      .c-rebuild { grid-column: 6 / span 2; }
+      .c-review-import { grid-column: 8 / span 2; }
+      .c-working { grid-column: 4 / span 5; }
+      .c-template { grid-column: 4 / span 5; }
+      .c-save { grid-column: 6 / span 2; }
+      .c-version { grid-column: 4 / span 5; border-color: var(--green); background: #173128; }
+      .c-manage { grid-column: 2 / span 9; }
+      .manage-list { display: grid; grid-template-columns: repeat(7, 1fr); gap: 7px; margin-top: 12px; }
+      .manage-list span { padding: 8px; border: 1px solid var(--line); color: var(--muted); font-size: 11px; line-height: 1.25; }
+      .lifecycle { display: grid; grid-template-columns: 1.15fr 34px 1fr 34px 1.15fr; align-items: stretch; }
+      .flow-arrow { display: grid; place-items: center; color: var(--green); font: 32px/1 var(--serif); }
+      .lifecycle .node { min-height: 100%; }
+      .action-stack { display: grid; gap: 9px; margin-top: 12px; }
+      .action-stack div { padding: 9px 10px; border-left: 2px solid var(--violet); background: rgba(216,140,233,.08); color: var(--ink); font-size: 12px; }
+      .rule { margin: 0; padding: 18px 20px; border-left: 3px solid var(--orange); background: rgba(244,190,120,.08); color: var(--muted); font-size: 13px; }
+      .tailoring { display: grid; grid-template-columns: 1.15fr 34px 1.3fr 34px 1fr; align-items: stretch; }
+      .decision { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 12px; }
+      .decision div { padding: 10px; border: 1px solid var(--line); font-size: 12px; }
+      .decision .supported { border-color: var(--green-deep); background: rgba(29,118,92,.16); }
+      .decision .gap { border-color: #76572f; background: rgba(244,190,120,.1); }
+      .result { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+      .active { display: grid; grid-template-columns: 1fr 34px 1.3fr 34px 1fr; margin-top: 20px; }
+      .source { margin: 20px 0 0; color: var(--muted); letter-spacing: .04em; text-transform: none; }
+      .source strong { color: var(--green); }
+      .note { max-width: 860px; margin-top: 26px; color: var(--muted); font-size: 13px; }
+      @media (max-width: 700px) {
+        .topbar { align-items: flex-start; flex-direction: column; }
+        .topnav { justify-content: flex-start; }
+        .hero { padding: 58px 0 45px; }
+        .section-head { display: block; }
+        .diagram-number { margin-bottom: 12px; }
+      }
+      @media print {
+        body { background: white; color: #182723; }
+        .topbar { position: static; background: white; color: #182723; }
+        .brand, .topnav { color: #182723; }
+        .canvas { background: white; border-color: #9daea7; }
+        .node { background: #f7faf8; color: #182723; border-color: #9daea7; box-shadow: none; }
+        .node strong { color: #182723; } .node small, .legend, .rule, .source, .note, .section-head p { color: #44564e; }
+        .node.user { background: #f8f0fa; } .node.action, .c-version { background: #edf8f1; }
+        .node.warning { background: #fff7e9; } .manage-list span { color: #31443c; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <a class="brand" href="index.html"><span class="brand-mark">ResuMate</span><span class="brand-title">Workflow Diagrams</span></a>
+        <nav class="topnav" aria-label="Research navigation">
+          <a href="index.html">Research Foundation</a>
+          <a href="domain-model.html">Domain Model v1</a>
+          <a href="product-workflow.html">Workflow narrative</a>
+          <a href="#journey">Journey</a>
+          <a href="#lifecycle">Lifecycle</a>
+          <a href="#tailoring">AI tailoring</a>
+        </nav>
+      </header>
+      <main>
+        <header class="hero">
+          <p class="eyebrow">Pre-architecture research companion · product workflow only</p>
+          <h1>See the <em>ResuMate</em> journey.</h1>
+          <p class="intro">Three visual maps make the approved product workflow easier to review: how a Resume enters ResuMate, how saved Resume states behave, and how AI assists without changing career facts on its own.</p>
+          <div class="principles"><span>User control</span><span>Evidence protection</span><span>Explicit save</span><span>Content ≠ template</span></div>
+        </header>
+
+        <section id="journey">
+          <div class="section-head"><p class="diagram-number">Diagram 01</p><div><h2>Product / User Journey</h2><p>Creation, import, and existing saved Resumes converge on one explicit review-and-save journey.</p></div></div>
+          <div class="diagram" aria-label="Product and user journey diagram">
+            <div class="canvas">
+              <div class="legend"><span>Primary flow</span><span class="muted-dot">User choice</span><span class="warning-dot">Review boundary</span></div>
+              <div class="journey">
+                <div class="node user c-user"><span class="node-label">Start</span><strong>User</strong></div><div class="connector c-user">↓</div>
+                <div class="node c-login"><span class="node-label">Access</span><strong>Login / Sign Up</strong></div><div class="connector c-login">↓</div>
+                <div class="node c-home"><span class="node-label">Home</span><strong>Resume Home / Dashboard</strong><small>My Resumes</small></div><div class="connector c-home">↓</div>
+                <div class="node user c-create"><span class="node-label">Choice</span><strong>Create New Resume</strong></div>
+                <div class="node user c-upload"><span class="node-label">Choice</span><strong>Existing Resume</strong><small>Upload / Import</small></div>
+                <div class="node user c-saved"><span class="node-label">Choice</span><strong>Open Saved Resume</strong></div>
+                <div class="node c-form"><span class="node-label">Create</span><strong>Form Input</strong></div>
+                <div class="node c-chat"><span class="node-label">Create</span><strong>AI / Chat Creation</strong></div>
+                <div class="node c-import"><span class="node-label">Import</span><strong>Choose Import Path</strong><small>PDF / DOCX / Image</small></div>
+                <div class="node action c-open"><span class="node-label">Persisted</span><strong>Saved Resume</strong></div>
+                <div class="node c-as-is"><span class="node-label">Import</span><strong>Use As-Is</strong></div>
+                <div class="node c-rebuild"><span class="node-label">Import</span><strong>Extract / Rebuild</strong><small>AI / Parser extraction</small></div>
+                <div class="node warning c-review-import"><span class="node-label">Required review</span><strong>User Reviews &amp; Corrects</strong></div>
+                <div class="connector c-working">↓</div>
+                <div class="node c-working"><span class="node-label">Not yet persisted</span><strong>Temporary Working State / Preview</strong><small>User reviews and edits content.</small></div><div class="connector c-template">↓</div>
+                <div class="node c-template"><span class="node-label">Presentation</span><strong>Select Template + Localization</strong><small>Changes rendering, not factual Resume content.</small></div><div class="connector c-save">↓</div>
+                <div class="node action c-save"><span class="node-label">Explicit choice</span><strong>Save</strong></div><div class="connector c-version">↓</div>
+                <div class="node action c-version"><span class="node-label">Persisted Resume</span><strong>Version</strong><small>A saved independent Resume entry.</small></div><div class="connector c-manage">↓</div>
+                <div class="node c-manage"><span class="node-label">User-controlled actions</span><strong>Manage saved Resume</strong><div class="manage-list"><span>Direct Edit</span><span>Create Copy &amp; Edit</span><span>AI Enhance</span><span>ATS / Quality Analysis</span><span>Tailor to Job</span><span>Preview / Export / Share</span><span>Active CV / Duplicate / Delete</span></div></div>
+              </div>
+            </div>
+          </div>
+          <p class="source"><strong>Source:</strong> Product Workflow Draft §§1–2, §10, §16.</p>
+        </section>
+
+        <section id="lifecycle">
+          <div class="section-head"><p class="diagram-number">Diagram 02</p><div><h2>Resume Lifecycle &amp; User Actions</h2><p>Version and Variation remain distinct saved states. A user chooses how a saved Resume changes.</p></div></div>
+          <div class="diagram" aria-label="Resume lifecycle and user actions diagram"><div class="canvas">
+            <div class="lifecycle">
+              <div class="node"><span class="node-label">Working state</span><strong>Create / Import → Review → Save</strong><small>Upload is not a Version until the user saves or imports it.</small></div>
+              <div class="flow-arrow">→</div>
+              <div class="node action"><span class="node-label">Persisted base</span><strong>Version</strong><small>New creation, imported/save, or explicit Duplicate Version.</small><div class="action-stack"><div>Direct Edit → Update Current Resume</div><div>Create Copy &amp; Edit → temporary working state</div><div>Duplicate Version → new independent root Resume</div></div></div>
+              <div class="flow-arrow">→</div>
+              <div class="node"><span class="node-label">Persisted branch</span><strong>Variation</strong><small>Saved branch derived from a Version or Variation. It is a standalone snapshot.</small><div class="action-stack"><div>AI changes reviewed by user</div><div>Save as Variation</div><div>Same root Version group</div></div></div>
+            </div>
+            <p class="rule">A normal edit does not automatically create a Version. “Duplicate Version” creates an independent root Resume; “Save as Variation” creates a branch under the root Version group.</p>
+            <div class="active">
+              <div class="node"><span class="node-label">Any saved Resume</span><strong>Version / Variation</strong></div><div class="flow-arrow">→</div>
+              <div class="node"><span class="node-label">User chooses</span><strong>Set as Active CV</strong><small>Active CV (0..1)</small></div><div class="flow-arrow">→</div>
+              <div class="node warning"><span class="node-label">Recommendation only</span><strong>Newer relevant evidence?</strong><small>Warn only. No automatic update, switch, or merge.</small></div>
+            </div>
+          </div></div>
+          <p class="source"><strong>Source:</strong> Product Workflow Draft §§3–4, §§11–14; Domain Model v1 §§4–7, §19.</p>
+        </section>
+
+        <section id="tailoring">
+          <div class="section-head"><p class="diagram-number">Diagram 03</p><div><h2>AI Enhancement &amp; Job Tailoring</h2><p>AI can improve presentation and relevance, but it must surface gaps instead of inventing unsupported career evidence.</p></div></div>
+          <div class="diagram" aria-label="AI enhancement and job tailoring diagram"><div class="canvas">
+            <div class="tailoring">
+              <div class="node"><span class="node-label">Starting point</span><strong>Saved Version / Variation</strong><div class="action-stack"><div>AI Enhance</div><div>ATS / Resume Analysis</div><div>Tailor Resume</div></div></div>
+              <div class="flow-arrow">→</div>
+              <div class="node"><span class="node-label">Optional, flexible input</span><strong>Job Context</strong><small>Target Role(s), Applied Position, Job Description, Requirements, Company, Location, Employment Type—any useful combination.</small><div class="decision"><div class="supported"><strong>Supported evidence</strong><br />Use, reframe, or emphasize.</div><div class="gap"><strong>Missing / gap</strong><br />Show to user. <b>Do not fabricate.</b></div></div></div>
+              <div class="flow-arrow">→</div>
+              <div class="node action"><span class="node-label">User remains in control</span><strong>Suggested changes</strong><small>Summary, experience emphasis, skills presentation, ordering, and wording.</small><div class="result">User reviews: Accept / Edit / Reject → Preview → Update Current <em>or</em> Save as Variation.</div></div>
+            </div>
+          </div></div>
+          <p class="source"><strong>Source:</strong> Product Workflow Draft §§5–7, §15; Domain Model v1 §10.</p>
+          <p class="note">This visual companion intentionally excludes technical components, services, APIs, databases, parsers, and deployment design. It is a product-flow review aid based on the existing research documents.</p>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
