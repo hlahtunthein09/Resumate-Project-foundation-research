@@ -1,0 +1,46 @@
+template ကို ဖြုတ်ထားမယ်
+data ကို json နဲ့ သိမ်းမယ်
+အခုက default template တစ်ခုနဲ့ ပြထားပြီး အဲ့တာကို ပဲ edit , tailor အကုန် လုပ်သွားမယ်.
+https://mince-sign-gig.figma.site/
+
+customize လုပ်ချင်ရင်လဲ 
+profileကိုပဲ edit မယ် 
+profile နဲ့ output သည် တထပ်တည်းကျရမယ်။
+
+rendering engine ကို AI ဘက်က ထိန်းချုပ်မယ်
+
+JSON နဲ့ဆိုရင် version စိတ်ကြိုက် ပြင်လို့ ရမယ်။
+
+resume တစ်ခုကို ထားပြီး ပြင်ချင်တာ ပြင်မယ်။
+profile မထားတော့ဘူး။
+===================
+
+OCR model တွေကို နောက်မှ သုံးမယ်။
+
+paywall
+=======
+version/variant copy limit 1 to 3 for free user
+domain ကိုလဲ payment နဲ့ ပဲ ပြမယ်
+နိုင်ငံတကာက employer တွေ လာကြည့်ရင် နိုင်ငံ အပေါ် မူတည်ပြီး cv variant ကို ပြလို့ ရပါမယ်
+အခုက လောလော ဆယ် domain link တစ်ခု တည်းနဲ့ သွားမယ်
+
+Kimi K3 ကို frontend design အတွက် သုံးပါမယ်။
+animation, color choosing အကုန် ကောင်းပါတယ်။
+
+
+project implementation အတွက် tanstack stack ကို သုံးပါမယ်။
+
+workflow
+===========
+entry သုံးခုကနေ ဝင်လာပြီး ရောက်လာတဲ့ resume တစ်ခုခုကို 
+extract stage, edit stage, enhance stage, စတဲ့ အဆင့်တွေ ကို ဖြတ် သန်း သွားပါမယ်။
+
+portfolio အတွက် အကောင့် တစ်ခုကို တစ်ခုကို
+resume တစ်ခုနဲ့ ချိတ် လို့ ရမယ်။
+
+parsing ကိုလဲ AI နဲ့ သွားမယ်
+OCR ကို နောက်မှ လုပ်မယ်။
+
+money pilot
+
+linkedIn profile တွေကို AI နဲ့ လုပ်ပြီး တင်မယ်။
