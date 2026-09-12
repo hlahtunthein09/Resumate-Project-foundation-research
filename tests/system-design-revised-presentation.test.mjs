@@ -112,3 +112,7 @@ test("connects the revised checkpoint to the research series", () => {
   ])
     assert.ok(presentation.includes(`href="${page}"`), `missing link: ${page}`);
 });
+
+test("uses dark ink for extraction-step descriptions on white cards", () => {
+  assert.match(presentation, /\.steps span\s*\{[^}]*color:\s*var\(--ink\);/s);
+});
