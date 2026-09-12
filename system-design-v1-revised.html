@@ -1,0 +1,1238 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="ResuMate System Design V1 — revised after senior review"
+    />
+    <title>ResuMate — System Design V1 Revised</title>
+    <style>
+      :root {
+        --ink: #152724;
+        --paper: #f2f5f2;
+        --line: #c9d4cf;
+        --muted: #596a64;
+        --green: #176c50;
+        --mint: #caecd9;
+        --dark: #13211f;
+        --dark2: #1e3530;
+        --amber: #c78224;
+        --amberbg: #fff4dc;
+        --blue: #33798e;
+        --rose: #a94e43;
+        --radius: 5px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font:
+          16px/1.58 Inter,
+          ui-sans-serif,
+          system-ui,
+          sans-serif;
+      }
+      a {
+        color: inherit;
+      }
+      .shell {
+        display: grid;
+        grid-template-columns: 286px minmax(0, 1fr);
+        max-width: 1600px;
+        min-height: 100vh;
+        margin: auto;
+        background: #fbfcfa;
+      }
+      aside {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow: auto;
+        padding: 30px 22px;
+        background: #e8eeea;
+        border-right: 1px solid var(--line);
+      }
+      .brand {
+        display: block;
+        margin-bottom: 27px;
+        text-decoration: none;
+      }
+      .mark {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--green);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+      }
+      .mark::before {
+        content: "R";
+        display: grid;
+        place-items: center;
+        width: 22px;
+        height: 22px;
+        background: var(--green);
+        color: #fff;
+        font:
+          700 15px Georgia,
+          serif;
+      }
+      .brand h1 {
+        margin: 12px 0 5px;
+        font:
+          600 28px/0.96 Georgia,
+          serif;
+        letter-spacing: -0.04em;
+      }
+      .brand p,
+      .aside-note {
+        margin: 0;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      nav {
+        padding-top: 14px;
+        border-top: 1px solid var(--line);
+      }
+      nav a {
+        display: block;
+        padding: 6px 8px;
+        border-left: 2px solid transparent;
+        color: #53645d;
+        text-decoration: none;
+        font-size: 13px;
+      }
+      nav a:hover,
+      nav a:focus-visible,
+      nav a.active {
+        color: var(--ink);
+        background: #fafcf9;
+        border-left-color: var(--green);
+        outline: none;
+      }
+      .aside-note {
+        margin-top: 24px;
+        padding-top: 15px;
+        border-top: 1px solid var(--line);
+        line-height: 1.45;
+      }
+      main {
+        min-width: 0;
+        padding: 0 clamp(28px, 6vw, 102px) 80px;
+      }
+      .hero {
+        min-height: 510px;
+        display: flex;
+        flex-direction: column;
+        justify-content: end;
+        padding: 74px 0 65px;
+        border-bottom: 1px solid var(--line);
+      }
+      .meta {
+        margin: 0 0 13px;
+        color: var(--green);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+      }
+      h2 {
+        max-width: 920px;
+        margin: 0;
+        font:
+          600 clamp(48px, 7vw, 86px) / 0.92 Georgia,
+          serif;
+        letter-spacing: -0.06em;
+      }
+      .intro {
+        max-width: 780px;
+        margin: 26px 0 0;
+        color: #354944;
+        font-size: 20px;
+      }
+      .badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin-top: 26px;
+      }
+      .badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border: 1px solid currentColor;
+        border-radius: 99px;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+      }
+      .approved {
+        color: #176c50;
+        background: #e4f5eb;
+      }
+      .adopted {
+        color: #276879;
+        background: #e4f0f4;
+      }
+      .preferred {
+        color: #866018;
+        background: var(--amberbg);
+      }
+      .deferred {
+        color: #894a3e;
+        background: #fbece7;
+      }
+      section {
+        max-width: 1110px;
+        padding: 65px 0;
+        border-bottom: 1px solid var(--line);
+        scroll-margin-top: 16px;
+      }
+      h3 {
+        max-width: 920px;
+        margin: 0;
+        font:
+          600 clamp(31px, 4vw, 48px) / 1.04 Georgia,
+          serif;
+        letter-spacing: -0.045em;
+      }
+      .lede {
+        max-width: 830px;
+        margin: 19px 0 0;
+        color: #344842;
+        font-size: 19px;
+      }
+      .grid {
+        display: grid;
+        gap: 16px;
+        margin-top: 28px;
+      }
+      .two {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .four {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+      .card {
+        min-width: 0;
+        padding: 20px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: #fff;
+      }
+      .card p {
+        margin: 9px 0 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .tag {
+        display: block;
+        margin-bottom: 10px;
+        color: var(--green);
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+      }
+      h4 {
+        margin: 0;
+        font-size: 16px;
+        line-height: 1.25;
+      }
+      .quote {
+        max-width: 900px;
+        margin: 28px 0 0;
+        padding: 23px 27px;
+        border-left: 5px solid var(--green);
+        background: #e5f1e9;
+        font:
+          600 clamp(21px, 2.6vw, 31px) / 1.2 Georgia,
+          serif;
+      }
+      .diagram {
+        overflow: auto;
+        margin-top: 30px;
+        padding: 24px;
+        border-radius: var(--radius);
+        background: var(--dark);
+        color: #e9f2ed;
+      }
+      .diagram-title {
+        margin: 0 0 18px;
+        color: var(--mint);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+      }
+      .flow {
+        min-width: 770px;
+        display: grid;
+        grid-template-columns: 1fr 38px 1.25fr 38px 1fr;
+        gap: 8px;
+        align-items: stretch;
+      }
+      .node {
+        padding: 14px;
+        border: 1px solid #3b554d;
+        background: var(--dark2);
+        font-size: 14px;
+      }
+      .node small {
+        display: block;
+        margin-top: 7px;
+        color: #bdccc5;
+        font-size: 11px;
+      }
+      .node.good {
+        border-color: #61af85;
+        background: #1a4034;
+      }
+      .node.warn {
+        border-color: #a77c30;
+        background: #42351e;
+      }
+      .arrow {
+        display: grid;
+        place-items: center;
+        color: var(--mint);
+        font:
+          28px/1 Georgia,
+          serif;
+      }
+      .stack {
+        display: grid;
+        gap: 8px;
+      }
+      .steps {
+        min-width: 760px;
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+      }
+      .steps div {
+        min-height: 105px;
+        padding: 15px;
+        border: 1px solid var(--line);
+        border-right: 0;
+        background: #fff;
+      }
+      .steps div:last-child {
+        border-right: 1px solid var(--line);
+      }
+      .steps b {
+        display: block;
+        margin-bottom: 16px;
+        color: var(--green);
+        font-size: 10px;
+        letter-spacing: 0.07em;
+      }
+      .steps span {
+        font-size: 14px;
+        font-weight: 700;
+      }
+      table {
+        width: 100%;
+        margin-top: 27px;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      th,
+      td {
+        padding: 13px 12px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+      }
+      th {
+        color: var(--green);
+        font-size: 10px;
+        letter-spacing: 0.08em;
+      }
+      td:first-child {
+        width: 24%;
+        font-weight: 700;
+      }
+      .callout {
+        margin-top: 26px;
+        padding: 19px;
+        border: 1px solid #b8d9c5;
+        border-radius: var(--radius);
+        background: #e5f2e9;
+      }
+      .warning {
+        border-color: #e2c78f;
+        background: #fff8e9;
+      }
+      .warning strong {
+        color: #835b12;
+      }
+      details {
+        margin-top: 14px;
+        border: 1px solid var(--line);
+        background: #fff;
+      }
+      summary {
+        cursor: pointer;
+        padding: 15px 17px;
+        font-weight: 700;
+      }
+      details div {
+        padding: 0 17px 16px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .decision {
+        display: grid;
+        grid-template-columns: 1.1fr 1.5fr 145px;
+        gap: 14px;
+        align-items: center;
+        margin-top: 10px;
+        padding: 15px;
+        border: 1px solid var(--line);
+        background: #fff;
+        font-size: 13px;
+      }
+      .decision p {
+        margin: 0;
+        color: var(--muted);
+      }
+      .evolution {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 1px;
+        margin-top: 28px;
+        background: #416157;
+      }
+      .evolution div {
+        min-height: 155px;
+        padding: 17px;
+        background: #e6f0e9;
+      }
+      .evolution b {
+        display: block;
+        margin-bottom: 18px;
+        color: #176c50;
+        font-size: 11px;
+        letter-spacing: 0.07em;
+      }
+      .foot {
+        padding-top: 35px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      @media (max-width: 960px) {
+        .shell {
+          grid-template-columns: 230px minmax(0, 1fr);
+        }
+        aside {
+          padding: 24px 15px;
+        }
+        main {
+          padding-left: 38px;
+          padding-right: 38px;
+        }
+        .three,
+        .four {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .decision {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      @media (max-width: 700px) {
+        .shell {
+          display: block;
+        }
+        aside {
+          position: relative;
+          height: auto;
+          padding: 22px;
+          border-right: 0;
+          border-bottom: 1px solid var(--line);
+        }
+        nav {
+          display: flex;
+          overflow: auto;
+          gap: 2px;
+        }
+        nav a {
+          flex: 0 0 auto;
+          border-left: 0;
+          border-bottom: 2px solid transparent;
+        }
+        .aside-note {
+          display: none;
+        }
+        main {
+          padding: 0 22px 58px;
+        }
+        .hero {
+          min-height: 400px;
+          padding: 55px 0;
+        }
+        .intro,
+        .lede {
+          font-size: 18px;
+        }
+        section {
+          padding: 48px 0;
+        }
+        .two,
+        .three,
+        .four {
+          grid-template-columns: 1fr;
+        }
+        .diagram {
+          margin-left: -6px;
+          margin-right: -6px;
+          padding: 16px;
+        }
+        .steps {
+          grid-template-columns: repeat(3, 130px);
+        }
+        .decision {
+          grid-template-columns: 1fr;
+        }
+        .evolution {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <aside>
+        <a class="brand" href="#overview"
+          ><span class="mark">ResuMate</span>
+          <h1>System Design<br />V1 Revised</h1>
+          <p>Senior-reviewed revision checkpoint<br />September 2026</p></a
+        >
+        <nav aria-label="Presentation navigation">
+          <a href="index.html">Research Foundation</a
+          ><a href="domain-model.html">Domain Model v1</a
+          ><a href="product-workflow.html">Product Workflow Draft</a
+          ><a href="product-workflow-diagrams.html">Workflow Diagrams</a
+          ><a href="system-design-v1.html">Prior System Design V1</a
+          ><a href="#overview">Overview</a><a href="#outcome">Review outcome</a
+          ><a href="#model">Resume / Variant</a><a href="#runtime">Runtime</a
+          ><a href="#extraction">Extraction</a><a href="#ai">AI harness</a
+          ><a href="#security">Security</a><a href="#scaling">Scaling</a
+          ><a href="#cost">Costs</a><a href="#technology">Technology status</a
+          ><a href="#deferred">Deferred evolution</a
+          ><a href="#stage-8">Stage 8</a><a href="#summary">Summary</a>
+        </nav>
+        <p class="aside-note">
+          Current source of truth:<br /><strong
+            >RESUMATE-SYSTEM-DESIGN-V1-REVISED-AFTER-SENIOR-REVIEW.md</strong
+          ><br /><br />This revision replaces architecture assumptions for V1;
+          it does not erase the prior checkpoint.
+        </p>
+      </aside>
+      <main>
+        <header class="hero" id="overview">
+          <p class="meta">RESUMATE · REVISED V1 · SENIOR-REVIEWED</p>
+          <h2>Defer complexity, not capability.</h2>
+          <p class="intro">
+            The V1 architecture keeps the modular monolith and core safety
+            boundaries, while removing job/worker/OCR infrastructure until
+            product evidence proves it necessary.
+          </p>
+          <div class="badges">
+            <span class="badge approved">APPROVED</span
+            ><span class="badge adopted">ADOPTED FOR V1</span
+            ><span class="badge preferred">PREFERRED CANDIDATE</span
+            ><span class="badge deferred">DEFERRED</span>
+          </div>
+        </header>
+        <section id="outcome">
+          <p class="meta">01 / Senior review outcome</p>
+          <h3>
+            The product model survives review. The runtime becomes deliberately
+            smaller.
+          </h3>
+          <div class="grid three">
+            <div class="card">
+              <span class="badge approved">APPROVED</span>
+              <h4>V1 product scope</h4>
+              <p>The current product scope remains valid.</p>
+            </div>
+            <div class="card">
+              <span class="badge adopted">ADOPTED FOR V1</span>
+              <h4>Direct LLM extraction</h4>
+              <p>
+                Multimodal extraction replaces the prior parser → OCR → mapping
+                runtime.
+              </p>
+            </div>
+            <div class="card">
+              <span class="badge deferred">DEFERRED</span>
+              <h4>Job/worker infrastructure</h4>
+              <p>
+                ProcessingJob, workers, polling, queues, and OCR remain
+                future-ready but are not V1 requirements.
+              </p>
+            </div>
+          </div>
+          <blockquote class="quote">
+            V1 should contain the minimum architecture necessary to build the
+            product clearly, correctly, securely, and maintainably.
+          </blockquote>
+        </section>
+        <section id="model">
+          <p class="meta">02 / Resume / Variant model</p>
+          <h3>
+            Terminology is simpler; independent snapshots and lineage are
+            unchanged.
+          </h3>
+          <div class="diagram">
+            <p class="diagram-title">Resume / Variant lineage</p>
+            <div class="flow">
+              <div class="node good">
+                <strong>RESUME</strong
+                ><small
+                  >Root, independently persisted document. `ROOT` remains
+                  implementation-only.</small
+                >
+              </div>
+              <div class="arrow">→</div>
+              <div class="node">
+                <strong>VARIANT A1</strong
+                ><small
+                  >`rootResumeId = Resume A`<br />`sourceResumeId = Resume
+                  A`</small
+                >
+              </div>
+              <div class="arrow">→</div>
+              <div class="node">
+                <strong>VARIANT A2</strong
+                ><small
+                  >`rootResumeId = Resume A`<br />`sourceResumeId = Variant
+                  A1`</small
+                >
+              </div>
+            </div>
+          </div>
+          <div class="grid two">
+            <div class="card">
+              <h4>One entity shape</h4>
+              <p>
+                `kind: ROOT | VARIANT`, ownership, root/source lineage,
+                revision, JSONB content, and timestamps can share the same
+                Resume entity/table.
+              </p>
+            </div>
+            <div class="card">
+              <h4>One non-negotiable rule</h4>
+              <p>
+                Every Variant belongs to exactly one root Resume. Resume and
+                Variant snapshots are independent; updating one never mutates
+                another.
+              </p>
+            </div>
+          </div>
+          <div class="callout">
+            Direct Edit updates the current persisted Resume/Variant. Copy &
+            Edit uses temporary Working State, then saves a Variant. Root
+            deletion may transactionally promote the oldest preserved Variant to
+            root Resume.
+          </div>
+          <div class="callout">
+            Local editor state is protected by a debounced server-backed Working
+            Draft and a Resume revision number. <code>expectedRevision</code>
+            prevents stale writes; a multi-device conflict must be surfaced for
+            resolution rather than silently overwriting newer work.
+          </div>
+        </section>
+        <section id="runtime">
+          <p class="meta">03 / Revised V1 runtime</p>
+          <h3>
+            Long operations are direct service calls inside the modular
+            monolith.
+          </h3>
+          <div class="diagram">
+            <p class="diagram-title">Direct V1 architecture</p>
+            <div class="flow">
+              <div class="stack">
+                <div class="node">
+                  TanStack Start UI<small
+                    >React client; local editor state</small
+                  >
+                </div>
+                <div class="node">
+                  User action<small
+                    >Tailor, extract, enhance, analyze, export</small
+                  >
+                </div>
+              </div>
+              <div class="arrow">→</div>
+              <div class="node good">
+                <strong>Node.js modular monolith</strong
+                ><small
+                  >Auth · User/Profile · Resume/Variant · Working Draft ·
+                  File/Upload · Document Extraction · AI Harness · Tailoring ·
+                  Analysis · Public Profile · Export</small
+                >
+              </div>
+              <div class="arrow">→</div>
+              <div class="stack">
+                <div class="node">
+                  PostgreSQL + JSONB<small
+                    >Relational metadata and independent snapshots</small
+                  >
+                </div>
+                <div class="node">
+                  Private storage / OpenAI / PDF renderer<small
+                    >Provider services behind boundaries</small
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="lede">
+            Direct service calls replace persistent job state. V1 request state
+            is simply idle, loading, processing, success, or error.
+          </p>
+          <div class="callout warning">
+            <strong>Not V1 runtime components:</strong> ProcessingJob,
+            Background worker, Durable queue, Redis/BullMQ, and Job polling are
+            DEFERRED, not rejected.
+          </div>
+        </section>
+        <section id="extraction">
+          <p class="meta">04 / Multimodal LLM extraction</p>
+          <h3>
+            Extraction determines what the document says. It never improves the
+            Resume.
+          </h3>
+          <div class="diagram">
+            <p class="diagram-title">Direct extraction and review flow</p>
+            <div class="steps">
+              <div>
+                <b>UPLOAD</b><span>Validate PDF, DOCX, JPG, JPEG, PNG</span>
+              </div>
+              <div><b>STORE</b><span>Private object storage</span></div>
+              <div><b>EXTRACT</b><span>DocumentExtractionService</span></div>
+              <div><b>VALIDATE</b><span>Schema + evidence + quality</span></div>
+              <div><b>REVIEW</b><span>User corrects uncertainty</span></div>
+              <div><b>SAVE</b><span>Resume JSON or original file</span></div>
+            </div>
+          </div>
+          <div class="grid two">
+            <div class="card">
+              <span class="tag">SERVICE BOUNDARY</span>
+              <h4>DocumentExtractionService</h4>
+              <p>
+                Initial adapter: <strong>OpenAIDocumentExtractor</strong>.
+                Future implementations can include PaddleOCRExtractor,
+                ManagedOCRExtractor, or HybridExtractor without changing product
+                rules.
+              </p>
+            </div>
+            <div class="card">
+              <span class="tag">HARD BOUNDARY</span>
+              <h4>Extraction is not enhancement</h4>
+              <p>
+                Do not rewrite descriptions, improve grammar, infer
+                achievements, add metrics, fabricate skills/dates, or silently
+                omit regional fields during extraction.
+              </p>
+            </div>
+          </div>
+          <blockquote class="quote">
+            Missing data is safer than fabricated data.
+          </blockquote>
+          <table>
+            <thead>
+              <tr>
+                <th>Quality</th>
+                <th>Initial threshold</th>
+                <th>Required action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>High</td>
+                <td>~80%+</td>
+                <td>
+                  Show extracted Resume, require review, allow save/import.
+                </td>
+              </tr>
+              <tr>
+                <td>Partial</td>
+                <td>~50–79%</td>
+                <td>
+                  Flag uncertainty, request correction, allow save only after
+                  user review.
+                </td>
+              </tr>
+              <tr>
+                <td>Unusable</td>
+                <td>&lt; ~50%</td>
+                <td>
+                  Do not fake success; request clearer input or offer Form/Chat.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <details>
+            <summary>LLM extraction contract</summary>
+            <div>
+              Extract only visible or strongly supported information. Use `null`
+              or review markers where facts are unreadable. Preserve unknown
+              meaningful sections as Custom Sections, preserve regional/personal
+              fields, deduplicate repeated headers/footers only when clear,
+              avoid merging unrelated columns, and preserve source/page metadata
+              when feasible.
+            </div>
+          </details>
+        </section>
+        <section id="ai">
+          <p class="meta">05 / Revised AI harness</p>
+          <h3>
+            Structured output is necessary, but it is not automatically
+            truthful.
+          </h3>
+          <div class="diagram">
+            <p class="diagram-title">AI Harness</p>
+            <div class="flow">
+              <div class="node">
+                User / file input<small>Relevant task input only</small>
+              </div>
+              <div class="arrow">→</div>
+              <div class="node">
+                Task Router + Context Builder<small
+                  >Dedicated task contract and token/output budget</small
+                >
+              </div>
+              <div class="arrow">→</div>
+              <div class="node good">
+                Provider Adapter + model<small
+                  >Structured output → schema → evidence/business validation →
+                  result</small
+                >
+              </div>
+            </div>
+          </div>
+          <div class="grid three">
+            <div class="card">
+              <h4>DOCUMENT_EXTRACTION</h4>
+              <p>
+                Field accuracy, omissions, hallucination, layout, multilingual
+                handling, latency, and cost determine routing.
+              </p>
+            </div>
+            <div class="card">
+              <h4>Other task classes</h4>
+              <p>
+                SMALL_REWRITE, RESUME_ENHANCEMENT, FULL_TAILORING, ATS_ANALYSIS,
+                and EDITOR_COMMAND use task-specific contracts.
+              </p>
+            </div>
+            <div class="card">
+              <h4>Routing rule</h4>
+              <p>
+                Use the cheapest model that reliably meets the extraction
+                quality requirement.
+              </p>
+            </div>
+          </div>
+          <div class="callout">
+            Application state remains the source of truth. Model memory is never
+            trusted as product memory. AI changes are structured, validated, and
+            user-reviewed before persistence.
+          </div>
+          <div class="grid two">
+            <div class="card">
+              <span class="tag">AI TRUTH BOUNDARY</span>
+              <h4>User-supported facts remain the limit</h4>
+              <p>
+                AI may transform, organize, clarify, and professionally express
+                user-supported facts, but must not fabricate unsupported career
+                evidence.
+              </p>
+            </div>
+            <div class="card">
+              <span class="tag">QUALITY DECISION</span>
+              <h4>Confidence is evidence, not truth</h4>
+              <p>
+                Extraction quality must not rely only on a model's self-reported
+                confidence score. It combines coverage, readability,
+                consistency, uncertainty, and structural checks before review.
+              </p>
+            </div>
+          </div>
+        </section>
+        <section id="security">
+          <p class="meta">06 / Security and direct-request failure handling</p>
+          <h3>
+            LLM extraction makes privacy minimization and server-side control
+            more important, not less.
+          </h3>
+          <div class="grid three">
+            <div class="card">
+              <h4>Extraction privacy</h4>
+              <p>
+                Send only the uploaded Resume required for extraction; never
+                attach unrelated account data, other Resumes, or cross-user
+                extracted content.
+              </p>
+            </div>
+            <div class="card">
+              <h4>Provider boundary</h4>
+              <p>
+                Keep provider usage behind the server. Never expose provider
+                keys to the client. Log operational metadata, not raw Resume
+                content.
+              </p>
+            </div>
+            <div class="card">
+              <h4>Validation first</h4>
+              <p>
+                Validate extension, MIME, file signature, size, and ownership
+                before sending a document to the provider; preserve private
+                object storage.
+              </p>
+            </div>
+          </div>
+          <div class="grid two">
+            <div class="card">
+              <span class="tag">FAILURE FLOW</span>
+              <h4>Limited retry, then clear alternatives</h4>
+              <p>
+                Transient external failures receive limited retry + backoff +
+                jitter. Extraction offers Retry, clearer upload, Form, or Chat;
+                enhancement can continue manually; PDF can retry export.
+              </p>
+            </div>
+            <div class="card">
+              <span class="tag">TIMEOUTS</span>
+              <h4>Operation-specific classes</h4>
+              <p>
+                Normal API, small AI request, document extraction, full
+                tailoring, and PDF rendering use separate timeouts. Exact values
+                are benchmark decisions.
+              </p>
+            </div>
+          </div>
+          <div class="grid three">
+            <div class="card">
+              <h4>Platform access control</h4>
+              <p>
+                Authentication, authorization, and ownership checks apply to
+                every Resume, Variant, file, draft, and action. Resume data is
+                Private-by-default.
+              </p>
+            </div>
+            <div class="card">
+              <h4>Data classification</h4>
+              <p>
+                Sensitive, private, and public data are handled differently.
+                Private-file access uses short-lived signed URLs rather than
+                public object links.
+              </p>
+            </div>
+            <div class="card">
+              <h4>Public Profile boundary</h4>
+              <p>
+                Visibility settings create a published snapshot for anonymous
+                public HTML; a Public Profile never reads mutable private Resume
+                data directly.
+              </p>
+            </div>
+          </div>
+          <div class="callout">
+            <strong>Storage and derived artifacts:</strong> Use-As-Is original
+            Resume file remains durable while the Resume exists. Extract &amp;
+            Edit source upload uses limited retention by default and a user may
+            delete it earlier; future paid plans may extend retention without
+            hard-coding the core domain around one plan. Generated PDFs are
+            short-lived unless explicitly preserved; temporary or abandoned
+            files expire. Resume structured JSON → renderer → headless browser →
+            PDF. PDF is a derived artifact, never the Resume source of truth.
+          </div>
+        </section>
+        <section id="scaling">
+          <p class="meta">07 / Direct-request scaling and capacity</p>
+          <h3>
+            Protect the simpler runtime until evidence calls for a durable job
+            system.
+          </h3>
+          <div class="diagram">
+            <p class="diagram-title">Measured evolution path</p>
+            <div class="flow">
+              <div class="node">
+                Measure<small>Latency, traffic, provider limits, cost</small>
+              </div>
+              <div class="arrow">→</div>
+              <div class="node">
+                Indexes + DB tuning + caching<small
+                  >Bounded connection pools</small
+                >
+              </div>
+              <div class="arrow">→</div>
+              <div class="node good">
+                AI rate/concurrency control<small
+                  >Horizontal app scaling before job architecture</small
+                >
+              </div>
+            </div>
+          </div>
+          <div class="grid two">
+            <div class="card">
+              <h4>Direct-request capacity controls</h4>
+              <p>
+                Account rate limits, AI quotas, bounded concurrent AI
+                operations, provider timeout handling, retry limits, request
+                cancellation where practical, and request admission control.
+              </p>
+            </div>
+            <div class="card">
+              <h4>Overload UX</h4>
+              <p>
+                Use 429 / Retry-After where appropriate, or a 503/high-demand
+                state:
+                <strong>High demand. Please try again shortly.</strong>
+                Persistent queued-waiting UX is deferred.
+              </p>
+            </div>
+          </div>
+          <p class="lede">
+            Initial assumptions remain: 100–500 registered users, 25 concurrent
+            baseline, and 100 concurrent success scenario. Test direct AI
+            latency, simultaneous extraction/tailoring, PDF load, provider
+            limits, and DB connections.
+          </p>
+        </section>
+        <section id="cost">
+          <p class="meta">08 / Revised cost model</p>
+          <h3>
+            Removing OCR compute reduces infrastructure complexity; extraction
+            becomes an AI cost.
+          </h3>
+          <div class="grid three">
+            <div class="card">
+              <span class="tag">INFRASTRUCTURE TARGET</span>
+              <h4>~$50/month</h4>
+              <p>
+                Without worker/OCR runtime, V1 may stay nearer the lower end.
+                Web, PostgreSQL, R2, PDF load, backups, and traffic still
+                determine actual cost.
+              </p>
+            </div>
+            <div class="card">
+              <span class="tag">INFRASTRUCTURE REVIEW</span>
+              <h4>~$100/month</h4>
+              <p>
+                Architecture-review ceiling, not an automatic shutdown rule.
+              </p>
+            </div>
+            <div class="card">
+              <span class="tag">AI GUARDRAILS</span>
+              <h4>~$100/month · ~$150/month · ~$250/month</h4>
+              <p>
+                Target, warning, and emergency-review monthly AI thresholds.
+                DOCUMENT_EXTRACTION belongs in telemetry.
+              </p>
+            </div>
+          </div>
+          <div class="callout">
+            Required telemetry: taskType, model, input tokens / image usage,
+            cached input, output tokens, latency, cost, success/failure, and
+            retry count.
+          </div>
+        </section>
+        <section id="technology">
+          <p class="meta">09 / Revised technology status</p>
+          <h3>
+            Architecture direction is strong; implementation vendors remain
+            candidates.
+          </h3>
+          <div class="grid two">
+            <div class="card">
+              <span class="badge approved">STRONG / APPROVED DIRECTION</span>
+              <ul>
+                <li>TanStack Start + React + Node.js</li>
+                <li>Modular Monolith</li>
+                <li>
+                  Managed PostgreSQL + relational metadata + JSONB snapshots
+                </li>
+                <li>Private S3-compatible object storage</li>
+                <li>Direct LLM document extraction</li>
+                <li>Structured AI operations and provider abstraction</li>
+                <li>Server-side PDF rendering</li>
+                <li>
+                  Strong authorization, cost observability, progressive scaling
+                </li>
+              </ul>
+            </div>
+            <div class="card">
+              <span class="badge preferred">PREFERRED / PROVISIONAL</span>
+              <ul>
+                <li>Drizzle ORM</li>
+                <li>Better Auth</li>
+                <li>Cloudflare R2</li>
+                <li>Railway</li>
+                <li>OpenAI direct</li>
+              </ul>
+              <p>
+                These are implementation candidates to validate during Stage
+                8/9.
+              </p>
+            </div>
+          </div>
+        </section>
+        <section id="deferred">
+          <p class="meta">10 / Deferred evolution</p>
+          <h3>
+            The V1 omission list is deliberate and has explicit future triggers.
+          </h3>
+          <div class="grid three">
+            <div class="card">
+              <span class="badge deferred">DEFERRED</span>
+              <h4>ProcessingJob + worker</h4>
+              <p>
+                Reconsider when operations outlive requests, fail on restart,
+                require durable retries/history, or need priority coordination.
+              </p>
+            </div>
+            <div class="card">
+              <span class="badge deferred">DEFERRED</span>
+              <h4>PaddleOCR / dedicated OCR</h4>
+              <p>
+                Deferred to avoid CPU/GPU runtime and deployment complexity,
+                reduce small-team operational burden, and validate the product
+                first. Reconsider if extraction cost, scan volume, accuracy,
+                privacy requirements, multilingual quality, or throughput make
+                it worthwhile.
+              </p>
+            </div>
+            <div class="card">
+              <span class="badge deferred">DEFERRED</span>
+              <h4>Durable queue / Redis/BullMQ</h4>
+              <p>
+                Reconsider for persistent backlog, multi-worker coordination,
+                difficult retry scheduling, priority work, or strict delivery
+                guarantees.
+              </p>
+            </div>
+          </div>
+          <div class="evolution">
+            <div>
+              <b>V1</b>Single Modular Monolith<br />Direct AI extraction and
+              operations
+            </div>
+            <div>
+              <b>PHASE 2</b>Dedicated worker for measured heavy operations
+            </div>
+            <div>
+              <b>PHASE 3</b>ProcessingJob + durable queue for proven
+              backlog/retry complexity
+            </div>
+            <div>
+              <b>PHASE 4</b>OCR or hybrid extraction pipeline for pressure on
+              accuracy/cost
+            </div>
+            <div>
+              <b>PHASE 5</b>Selective component separation only when
+              organizational scale justifies it
+            </div>
+          </div>
+        </section>
+        <section id="stage-8">
+          <p class="meta">11 / Stage 8 readiness</p>
+          <h3>
+            The next specification defines direct-service contracts, not
+            deferred infrastructure.
+          </h3>
+          <div class="grid two">
+            <div class="card">
+              <span class="tag">STAGE 8 MUST SPECIFY</span>
+              <p>
+                Resume/Variant schema and lineage, JSONB document, WorkingDraft,
+                File metadata, Job Context, Public Profile snapshot, auth,
+                server functions, direct AI services, DocumentExtractionService,
+                extraction result schema, quality model, ProposedPatch,
+                retry/timeout, PDF renderer, authorization, indexes, and errors.
+              </p>
+            </div>
+            <div class="card">
+              <span class="tag">STAGE 8 MUST NOT REQUIRE FOR V1</span>
+              <p>
+                ProcessingJob schema, worker contract, queue contract, or
+                PaddleOCR integration. Those are future-ready topics only.
+              </p>
+            </div>
+          </div>
+        </section>
+        <section id="summary">
+          <p class="meta">12 / Final revised V1 summary</p>
+          <h3>
+            Senior feedback is incorporated. V1 is simpler without losing the
+            path to scale.
+          </h3>
+          <div class="grid four">
+            <div class="card">
+              <span class="badge approved">APPROVED</span>
+              <p>Product scope, Modular Monolith, Resume / Variant model.</p>
+            </div>
+            <div class="card">
+              <span class="badge adopted">ADOPTED FOR V1</span>
+              <p>
+                Direct multimodal LLM extraction with structured validation and
+                review.
+              </p>
+            </div>
+            <div class="card">
+              <span class="badge preferred">CANDIDATES</span>
+              <p>Drizzle, Better Auth, R2, Railway, and OpenAI direct.</p>
+            </div>
+            <div class="card">
+              <span class="badge deferred">DEFERRED</span>
+              <p>
+                PaddleOCR, ProcessingJob, worker service, queues, Redis/BullMQ,
+                and job polling.
+              </p>
+            </div>
+          </div>
+          <blockquote class="quote">
+            Use advanced architecture only when the product has evidence that it
+            needs it.
+          </blockquote>
+          <p class="foot">
+            Source: ResuMate System Design V1 — Revised After Senior Review.
+            Current next step: Stage 8 — Detailed Technical Specification.
+          </p>
+        </section>
+      </main>
+    </div>
+    <script>
+      const links = [...document.querySelectorAll("nav a")],
+        sections = links
+          .map((a) => document.querySelector(a.getAttribute("href")))
+          .filter(Boolean);
+      function setActive() {
+        let current = sections[0],
+          marker = scrollY + innerHeight * 0.27;
+        for (const section of sections)
+          if (section.offsetTop <= marker) current = section;
+        links.forEach((link) =>
+          link.classList.toggle(
+            "active",
+            link.getAttribute("href") === `#${current.id}`,
+          ),
+        );
+      }
+      addEventListener("scroll", setActive, { passive: true });
+      addEventListener("resize", setActive);
+      setActive();
+    </script>
+  </body>
+</html>
